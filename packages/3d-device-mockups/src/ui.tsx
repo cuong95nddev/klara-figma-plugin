@@ -1,6 +1,7 @@
 import { emit } from "@create-figma-plugin/utilities";
 import React, { useCallback, useState } from "react";
 import ReactDOM from "react-dom";
+import { render } from "./render";
 import { InsertCodeHandler } from "./types";
 
 const App = () => {
@@ -18,7 +19,4 @@ const App = () => {
   );
 };
 
-export default ReactDOM.render(
-  <App />,
-  document.getElementById("create-figma-plugin")
-);
+export default render(App);

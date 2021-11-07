@@ -1,0 +1,30 @@
+diff --git a/node_modules/@create-figma-plugin/build/lib/utilities/build-bundles-async/build-bundles-async.js b/node_modules/@create-figma-plugin/build/lib/utilities/build-bundles-async/build-bundles-async.js
+index eb66747..3f1fede 100644
+--- a/node_modules/@create-figma-plugin/build/lib/utilities/build-bundles-async/build-bundles-async.js
++++ b/node_modules/@create-figma-plugin/build/lib/utilities/build-bundles-async/build-bundles-async.js
+@@ -4,7 +4,6 @@ import fs from 'fs-extra';
+ import indentString from 'indent-string';
+ import { join, resolve } from 'path';
+ import { esbuildCssModulesPlugin } from './esbuild-css-modules-plugin.js';
+-import { esbuildPreactCompatPlugin } from './esbuild-preact-compat-plugin.js';
+ export async function buildBundlesAsync(minify) {
+     const config = await readConfigAsync();
+     await Promise.all([
+@@ -72,8 +71,6 @@ async function buildUiBundleAsync(options) {
+     try {
+         const esbuildConfig = {
+             bundle: true,
+-            jsxFactory: 'h',
+-            jsxFragment: 'Fragment',
+             loader: {
+                 '.gif': 'dataurl',
+                 '.jpg': 'dataurl',
+@@ -83,7 +80,7 @@ async function buildUiBundleAsync(options) {
+             logLevel: 'silent',
+             minify,
+             outfile: join(process.cwd(), constants.build.buildDirectoryName, 'ui.js'),
+-            plugins: [esbuildPreactCompatPlugin(), esbuildCssModulesPlugin(minify)],
++            plugins: [esbuildCssModulesPlugin(minify)],
+             stdin: {
+                 contents: js,
+                 resolveDir: process.cwd()

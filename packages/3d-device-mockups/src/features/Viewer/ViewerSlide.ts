@@ -35,16 +35,10 @@ export const viewerSlice = createSlice({
     ) => {
       return { ...state, camera: action.payload};
     },
-    updateViewerState: (
-      state,
-      action: PayloadAction<ViewerState>
-    ) => {
-      return { ...state };
-    },
   },
 });
 
-export const { updateViewerState, updateCameraState } = viewerSlice.actions;
+export const { updateCameraState } = viewerSlice.actions;
 
 export const selectViewer = (state: RootState) => state.viewerState;
 

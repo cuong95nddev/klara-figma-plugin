@@ -1,6 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import CameraControls from "camera-controls";
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { MathUtils, PerspectiveCamera } from "three";
 import { CustomOrbitControls } from "./CameraControl";
 import CameraState from "./CameraState";
@@ -23,12 +23,17 @@ const Camera = ({
   const gl = useThree((state) => state.gl);
   const scene = useThree((state) => state.scene);
   const cameraControlRef = useRef<CameraControls>(null!);
-
   const camera: PerspectiveCamera = useThree(
     ({ camera }) => camera
   ) as PerspectiveCamera;
+  const dirty = useRef(false);
 
   useEffect(() => {
+    if(dirty.current){
+      dirty.current = false;
+      return;
+    }
+
     cameraControlRef.current.rotateTo(
       MathUtils.degToRad(cameraState.angle.azimuth),
       MathUtils.degToRad(cameraState.angle.polar),
@@ -39,11 +44,13 @@ const Camera = ({
   }, [cameraState]);
 
   const handleUpdateEvent = () => {
+    dirty.current = true;
+
     if (!onchange) {
       return;
     }
 
-    onchange({
+    let cameraState: CameraState = {
       angle: {
         azimuth: Math.round(
           MathUtils.radToDeg(cameraControlRef.current.azimuthAngle)
@@ -53,7 +60,8 @@ const Camera = ({
         ),
       },
       distance: cameraControlRef.current.distance,
-    });
+    };
+    onchange({...cameraState});
   };
 
   useEffect(() => {

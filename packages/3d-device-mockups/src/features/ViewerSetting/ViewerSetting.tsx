@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector, useFormInput } from "../../hooks";
+import { updateCameraState } from "../Viewer/ViewerSlide";
 
 const ViewerSetting = () => {
   const viewerState = useAppSelector((state) => state.viewerState);
@@ -13,17 +14,20 @@ const ViewerSetting = () => {
   const cameraRotationY = useFormInput(viewerState.camera.angle.polar);
 
   useEffect(() => {
-    update();
+    updateCamera();
   }, [
-    modelRotationX.value,
-    modelRotationY.value,
-    modelRotationZ.value,
     cameraRotationX.value,
     cameraRotationY.value,
   ]);
 
-  const update = () => {
-    
+  const updateCamera = () => {
+    dispatch(updateCameraState({
+      angle: {
+        azimuth: Number(cameraRotationX.value),
+        polar: Number(cameraRotationY.value)
+      },
+      distance: 0
+    }))
   };
 
   return (

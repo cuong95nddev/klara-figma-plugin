@@ -15,7 +15,7 @@ const ModelViewer = () => {
       ...viewerState.camera,
     };
   }, [viewerState]);
-
+  
   const handleCameraChange = (cameraState: CameraState) => {
     dispatch(updateCameraState(cameraState));
   };

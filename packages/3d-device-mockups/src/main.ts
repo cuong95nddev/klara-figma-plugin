@@ -13,5 +13,5 @@ export default function () {
     console.log(figma.currentPage.selection);
   });
 
-  showUI({ width: 320, height: 240 });
+  showUI({ width: 800, height: 600 });
 }

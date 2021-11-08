@@ -1,18 +1,27 @@
 {
   "dependencies": {
-    "@create-figma-plugin/utilities": "^1.7.1"
+    "@create-figma-plugin/utilities": "^1.7.1",
+    "@react-three/drei": "^7.0.4",
+    "@react-three/fiber": "^7.0.1",
+    "@reduxjs/toolkit": "^1.6.0",
+    "camera-controls": "^1.30.0",
+    "lodash": "^4.17.21",
+    "patch-package": "^6.4.7",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
+    "three": "^0.129.0"
   },
   "devDependencies": {
     "@create-figma-plugin/build": "^1.7.1",
     "@create-figma-plugin/tsconfig": "^1.7.1",
     "@figma/plugin-typings": "1.37.0",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
-    "patch-package": "^6.4.7",
+    "@types/lodash": "^4.14.171",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.7",
+    "@types/three": "^0.129.1",
     "postinstall-postinstall": "^2.1.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "typescript": "^4"
+    "typescript": "^4.1.2"
   },
   "scripts": {
     "postinstall": "patch-package",

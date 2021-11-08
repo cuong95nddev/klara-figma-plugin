@@ -1,7 +1,10 @@
 import { emit } from "@create-figma-plugin/utilities";
 import React, { useCallback, useState } from "react";
-import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import Viewer from "./features/Viewer";
+import ViewerSetting from "./features/ViewerSetting";
 import { render } from "./render";
+import stores from "./stores";
 import { InsertCodeHandler } from "./types";
 
 const App = () => {
@@ -13,9 +16,16 @@ const App = () => {
     [code]
   );
   return (
-    <div>
-      <button onClick={handleInsertCodeButtonClick}>AHIHI</button>
-    </div>
+    <Provider store={stores}>
+      <div>
+        <div style={{ height: "400px", backgroundColor: "gray" }}>
+          <Viewer />
+        </div>
+        <div>
+          <ViewerSetting />
+        </div>
+      </div>
+    </Provider>
   );
 };
 

@@ -2,7 +2,8 @@ module.exports = function (buildOptions) {
   return {
     ...buildOptions,
     define: {
-      global: 'window'
-    }
-  }
-}
+      global: "window",
+    },
+    loader: { ".glb": "dataurl" },
+  };
+};

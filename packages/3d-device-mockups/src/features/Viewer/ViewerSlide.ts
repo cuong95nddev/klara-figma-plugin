@@ -1,14 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import CameraState from "../../components/Camera/CameraState";
-import ModelRenderState from "../../components/ModelRender/ModelRenderState";
+import { CameraState } from "../../components/Camera";
 import type { RootState } from "../../stores";
 import ViewerState from "./ViewerState";
 
 const initialState: ViewerState = {
   camera: {
-    azimuthAngle: 0,
-    polarAngle: 0,
-    distance: 0,
+    angle: {
+      azimuth: 0,
+      polar: 0,
+    },
+    distance: 0
   },
   model: {
     rotation: {
@@ -20,26 +21,31 @@ const initialState: ViewerState = {
       x: 0,
       y: 0,
       z: 0,
-    },
+    }
   },
 };
 
-export const viewerStateSlice = createSlice({
+export const viewerSlice = createSlice({
   name: "viewerState",
   initialState,
   reducers: {
-    updateCameraState: (state, action: PayloadAction<CameraState>) => {
-      return { ...state, camera: action.payload };
+    updateCameraState: (
+      state,
+      action: PayloadAction<CameraState>
+    ) => {
+      return { ...state, camera: action.payload};
     },
-
-    updateModelState: (state, action: PayloadAction<ModelRenderState>) => {
-      return { ...state, model: action.payload };
+    updateViewerState: (
+      state,
+      action: PayloadAction<ViewerState>
+    ) => {
+      return { ...state };
     },
   },
 });
 
-export const { updateCameraState, updateModelState } = viewerStateSlice.actions;
+export const { updateViewerState, updateCameraState } = viewerSlice.actions;
 
 export const selectViewer = (state: RootState) => state.viewerState;
 
-export default viewerStateSlice.reducer;
+export default viewerSlice.reducer;

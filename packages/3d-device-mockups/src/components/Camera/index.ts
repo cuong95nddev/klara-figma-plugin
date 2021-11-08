@@ -1,3 +1,2 @@
-export default "./Camera.tsx";
-export * from "./CameraAngleState";
-export * from "./CameraState";
+export { default } from "./Camera";
+export type { default as CameraState } from "./CameraState";

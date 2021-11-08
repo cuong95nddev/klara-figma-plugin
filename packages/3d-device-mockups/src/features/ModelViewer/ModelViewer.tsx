@@ -1,29 +1,20 @@
 import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { Fragment, Suspense, useMemo } from "react";
-import Camera from "../../components/Camera/Camera";
-import CameraState from "../../components/Camera/CameraState";
+import Camera, { CameraState } from "../../components/Camera";
 import ModelRender from "../../components/ModelRender";
-import ModelRenderState from "../../components/ModelRender/ModelRenderState";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { updateCameraState } from "./ViewerSlide";
+import { updateCameraState } from "../Viewer/ViewerSlide";
 
-const Viewer = () => {
+const ModelViewer = () => {
   const viewerState = useAppSelector((state) => state.viewerState);
-  //const viewerSetting = useAppSelector((state) => state.viewerSetting);
   const dispatch = useAppDispatch();
 
-  // const cameraState: CameraState = useMemo(() => {
-  //   return {
-  //     azimuthAngle: viewerSetting.camera.azimuthAngle,
-  //     polarAngle: viewerSetting.camera.polarAngle,
-  //     distance: viewerState.camera.distance,
-  //   };
-  // }, [viewerSetting]);
-
-  // const modelRenderState: ModelRenderState = useMemo(() => {
-  //   return viewerState.model;
-  // }, [viewerSetting]);
+  const cameraState: CameraState = useMemo(() => {
+    return {
+      ...viewerState.camera,
+    };
+  }, [viewerState]);
 
   const handleCameraChange = (cameraState: CameraState) => {
     dispatch(updateCameraState(cameraState));
@@ -59,19 +50,11 @@ const Viewer = () => {
             }}
           />
         </Suspense>
-
-        <Camera
-          cameraState={{
-            azimuthAngle: 0,
-            polarAngle: 0,
-            distance: 0,
-          }}
-          onchange={handleCameraChange}
-        />
+        <Camera cameraState={cameraState} onchange={handleCameraChange} />
       </Canvas>
       <Loader />
     </Fragment>
   );
 };
 
-export default Viewer;
+export default ModelViewer;

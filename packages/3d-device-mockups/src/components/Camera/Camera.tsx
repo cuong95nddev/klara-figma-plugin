@@ -12,24 +12,26 @@ export declare interface CameraProps {
 
 const Camera = ({
   cameraState = {
-    azimuthAngle: 0,
-    polarAngle: 0,
+    angle: {
+      azimuth: 0,
+      polar: 0,
+    },
     distance: 0,
   },
   onchange,
 }: CameraProps) => {
   const gl = useThree((state) => state.gl);
   const scene = useThree((state) => state.scene);
-  const orbitControls = useRef<CameraControls>(null!);
+  const cameraControlRef = useRef<CameraControls>(null!);
 
   const camera: PerspectiveCamera = useThree(
     ({ camera }) => camera
   ) as PerspectiveCamera;
 
   useEffect(() => {
-    orbitControls.current.rotateTo(
-      MathUtils.degToRad(cameraState.azimuthAngle),
-      MathUtils.degToRad(cameraState.polarAngle),
+    cameraControlRef.current.rotateTo(
+      MathUtils.degToRad(cameraState.angle.azimuth),
+      MathUtils.degToRad(cameraState.angle.polar),
       true
     );
 
@@ -42,13 +44,15 @@ const Camera = ({
     }
 
     onchange({
-      azimuthAngle: Math.round(
-        MathUtils.radToDeg(orbitControls.current.azimuthAngle)
-      ),
-      polarAngle: Math.round(
-        MathUtils.radToDeg(orbitControls.current.polarAngle)
-      ),
-      distance: orbitControls.current.distance,
+      angle: {
+        azimuth: Math.round(
+          MathUtils.radToDeg(cameraControlRef.current.azimuthAngle)
+        ),
+        polar: Math.round(
+          MathUtils.radToDeg(cameraControlRef.current.polarAngle)
+        ),
+      },
+      distance: cameraControlRef.current.distance,
     });
   };
 
@@ -59,16 +63,19 @@ const Camera = ({
     camera.aspect = gl.domElement.clientWidth / gl.domElement.clientHeight;
     camera.updateProjectionMatrix();
 
-    orbitControls.current.addEventListener("update", handleUpdateEvent);
+    cameraControlRef.current.addEventListener("control", handleUpdateEvent);
 
     return () => {
-      orbitControls.current.removeEventListener("update", handleUpdateEvent);
+      cameraControlRef.current.removeEventListener(
+        "control",
+        handleUpdateEvent
+      );
     };
   }, []);
 
   return (
     <Fragment>
-      <CustomOrbitControls ref={orbitControls} />
+      <CustomOrbitControls ref={cameraControlRef} />
     </Fragment>
   );
 };

@@ -1,8 +1,8 @@
 import { useGLTF } from "@react-three/drei";
 import React, { useEffect, useMemo } from "react";
 import { MathUtils } from "three";
+import { ModelRenderState } from ".";
 import defaultModel from "./DefaultModel";
-import ModelRenderState from "./ModelRenderState";
 
 export declare interface ModelRenderProps {
   modelRenderState: ModelRenderState;

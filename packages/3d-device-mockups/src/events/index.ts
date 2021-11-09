@@ -1,1 +1,1 @@
-export type { SelectionNodeChange } from "./SelectionNodeChange";
+export type { SelectionChangedHandler } from "./SelectionChangedHandler";

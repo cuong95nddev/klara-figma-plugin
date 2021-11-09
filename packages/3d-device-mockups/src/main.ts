@@ -1,16 +1,20 @@
-import { loadFontsAsync, once, showUI } from "@create-figma-plugin/utilities";
-
-import { InsertCodeHandler } from "./types";
+import {
+  emit,
+  getSelectedNodesOrAllNodes,
+  showUI,
+} from "@create-figma-plugin/utilities";
+import { SelectionChangedHandler } from "./events";
 
 export default function () {
-  once<InsertCodeHandler>("INSERT_CODE", async function (code: string) {
-    const text = figma.createText();
-    await loadFontsAsync([text]);
-    text.characters = code;
-    figma.closePlugin();
-  });
-  figma.on("selectionchange", function () {
-    console.log(figma.currentPage.selection);
+  figma.on("selectionchange", async function () {
+    const selectedNodes: SceneNode[] = getSelectedNodesOrAllNodes();
+    if (!selectedNodes.length) {
+      return;
+    }
+    const firstSelectedNode: ExportMixin = selectedNodes[0] as ExportMixin;
+    const nodeBlob: Uint8Array = await firstSelectedNode.exportAsync();
+    
+    emit<SelectionChangedHandler>("SELECTION_CHANGED", nodeBlob);
   });
 
   showUI({ width: 800, height: 600 });

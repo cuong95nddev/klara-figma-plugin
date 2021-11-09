@@ -4,6 +4,7 @@ import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { MathUtils, PerspectiveCamera } from "three";
 import { CustomOrbitControls } from "./CameraControl";
 import CameraState from "./CameraState";
+import useCameraKeyboard from "./useCameraKeyboard";
 
 export declare interface CameraProps {
   cameraState?: CameraState;
@@ -23,6 +24,7 @@ const Camera = ({
   const gl = useThree((state) => state.gl);
   const scene = useThree((state) => state.scene);
   const cameraControlRef = useRef<CameraControls>(null!);
+  useCameraKeyboard(cameraControlRef);
   const camera: PerspectiveCamera = useThree(
     ({ camera }) => camera
   ) as PerspectiveCamera;
@@ -40,7 +42,7 @@ const Camera = ({
       true
     );
 
-    //orbitControls.current.zoomTo(cameraState.distance);
+    cameraControlRef.current.dollyTo(cameraState.distance, true);
   }, [cameraState]);
 
   const handleUpdateEvent = () => {
@@ -49,6 +51,8 @@ const Camera = ({
     if (!onchange) {
       return;
     }
+
+    console.log(cameraControlRef.current.distance);
 
     let cameraState: CameraState = {
       angle: {
@@ -71,11 +75,21 @@ const Camera = ({
     camera.aspect = gl.domElement.clientWidth / gl.domElement.clientHeight;
     camera.updateProjectionMatrix();
 
-    cameraControlRef.current.addEventListener("control", handleUpdateEvent);
-
+    const KEYCODE = {
+      W: 87,
+      A: 65,
+      S: 83,
+      D: 68,
+      ARROW_LEFT : 37,
+      ARROW_UP   : 38,
+      ARROW_RIGHT: 39,
+      ARROW_DOWN : 40,
+    };
+    
+    cameraControlRef.current.addEventListener("update", handleUpdateEvent);
     return () => {
       cameraControlRef.current.removeEventListener(
-        "control",
+        "update",
         handleUpdateEvent
       );
     };

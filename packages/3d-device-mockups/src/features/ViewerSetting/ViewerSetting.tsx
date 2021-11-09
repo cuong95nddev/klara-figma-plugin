@@ -10,23 +10,25 @@ const ViewerSetting = () => {
   const modelRotationX = useFormInput(viewerState.model.rotation.x);
   const modelRotationY = useFormInput(viewerState.model.rotation.y);
   const modelRotationZ = useFormInput(viewerState.model.rotation.z);
-  const cameraRotationX = useFormInput(viewerState.camera.angle.azimuth);
-  const cameraRotationY = useFormInput(viewerState.camera.angle.polar);
+  const cameraAzimuthAngle= useFormInput(viewerState.camera.angle.azimuth);
+  const cameraPolarAngle = useFormInput(viewerState.camera.angle.polar);
+  const cameraDistance = useFormInput(viewerState.camera.distance);
 
   useEffect(() => {
     updateCamera();
   }, [
-    cameraRotationX.value,
-    cameraRotationY.value,
+    cameraAzimuthAngle.value,
+    cameraPolarAngle.value,
+    cameraDistance.value
   ]);
 
   const updateCamera = () => {
     dispatch(updateCameraState({
       angle: {
-        azimuth: Number(cameraRotationX.value),
-        polar: Number(cameraRotationY.value)
+        azimuth: Number(cameraAzimuthAngle.value),
+        polar: Number(cameraPolarAngle.value)
       },
-      distance: 0
+      distance: Number(cameraDistance.value)
     }))
   };
 
@@ -56,8 +58,9 @@ const ViewerSetting = () => {
             columnGap: "6px",
           }}
         >
-          <input {...cameraRotationX} type="number" />
-          <input {...cameraRotationY} type="number" />
+          <input {...cameraAzimuthAngle} type="number" />
+          <input {...cameraPolarAngle} type="number" />
+          <input {...cameraDistance} type="number" />
         </div>
       </div>
     </div>

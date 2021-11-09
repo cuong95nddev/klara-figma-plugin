@@ -22,7 +22,6 @@ const Camera = ({
   onchange,
 }: CameraProps) => {
   const gl = useThree((state) => state.gl);
-  const scene = useThree((state) => state.scene);
   const cameraControlRef = useRef<CameraControls>(null!);
   useCameraKeyboard(cameraControlRef);
   const camera: PerspectiveCamera = useThree(
@@ -31,7 +30,7 @@ const Camera = ({
   const dirty = useRef(false);
 
   useEffect(() => {
-    if(dirty.current){
+    if (dirty.current) {
       dirty.current = false;
       return;
     }
@@ -52,9 +51,7 @@ const Camera = ({
       return;
     }
 
-    console.log(cameraControlRef.current.distance);
-
-    let cameraState: CameraState = {
+    onchange({
       angle: {
         azimuth: Math.round(
           MathUtils.radToDeg(cameraControlRef.current.azimuthAngle)
@@ -64,8 +61,7 @@ const Camera = ({
         ),
       },
       distance: cameraControlRef.current.distance,
-    };
-    onchange({...cameraState});
+    });
   };
 
   useEffect(() => {
@@ -75,23 +71,9 @@ const Camera = ({
     camera.aspect = gl.domElement.clientWidth / gl.domElement.clientHeight;
     camera.updateProjectionMatrix();
 
-    const KEYCODE = {
-      W: 87,
-      A: 65,
-      S: 83,
-      D: 68,
-      ARROW_LEFT : 37,
-      ARROW_UP   : 38,
-      ARROW_RIGHT: 39,
-      ARROW_DOWN : 40,
-    };
-    
-    cameraControlRef.current.addEventListener("update", handleUpdateEvent);
+    cameraControlRef.current.addEventListener("control", handleUpdateEvent);
     return () => {
-      cameraControlRef.current.removeEventListener(
-        "update",
-        handleUpdateEvent
-      );
+      cameraControlRef.current.removeEventListener("control", handleUpdateEvent);
     };
   }, []);
 

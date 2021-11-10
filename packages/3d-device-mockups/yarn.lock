@@ -2,7 +2,14 @@
 # yarn lockfile v1
 
 
-"@babel/runtime@^7.11.2", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.6", "@babel/runtime@^7.15.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.11.2", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.6":
+  version "7.16.3"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.3.tgz#b86f0db02a04187a3c17caa77de69840165d42d5"
+  integrity sha512-WBwekcqacdY2e9AF/Q7WLFUWmdJGJTkbjqTjoMDgXkVZ3ZRUvOPsLb5KdwISoQVsbP+DQzVZW4Zhci0DvpbNTQ==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
+"@babel/runtime@^7.15.4", "@babel/runtime@^7.9.2":
   version "7.16.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.0.tgz#e27b977f2e2088ba24748bf99b5e1dece64e4f0b"
   integrity sha512-Nht8L0O8YCktmsDV6FqFue7vQLRx3Hb0B37lS5y0jDRqRxlBG4wIJHnf9/bgSE2UyipKFA01YtS+npRdTWBUyw==
@@ -90,27 +97,27 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@react-three/drei@^7.0.4":
-  version "7.20.0"
-  resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-7.20.0.tgz#30bb4a1bfe46bfcb47623fab56bbb541b2eb6f19"
-  integrity sha512-ME4n6ygY7ET4A+jYdxOU7/dDwd+qh4AfifO3hs21JFJxNvyRXQQsbNnmX2K0zDsW2swWGyCaatOVuLiIlbtDTA==
+"@react-three/drei@^7.20.4":
+  version "7.20.4"
+  resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-7.20.4.tgz#a269b65c5b9019629acabbef91a6099dfd1d224f"
+  integrity sha512-t/nse9eg+YHUD+BZjYc/ZcrejScj9QuniKi75Xb6wJ9z5faiDjInfUtVAKNNDtMPG8UDjU9aCQ/Xh0g7xXZ2nQ==
   dependencies:
     "@babel/runtime" "^7.11.2"
-    detect-gpu "^3.1.21"
+    detect-gpu "^3.1.25"
     glsl-noise "^0.0.0"
     lodash.omit "^4.5.0"
     lodash.pick "^4.4.0"
-    react-composer "^5.0.1"
+    react-composer "^5.0.2"
     react-merge-refs "^1.1.0"
     stats.js "^0.17.0"
-    three-mesh-bvh "^0.5.0"
-    three-stdlib "^2.5.4"
+    three-mesh-bvh "^0.5.2"
+    three-stdlib "^2.5.9"
     troika-three-text "^0.43.0"
     use-asset "^1.0.4"
     utility-types "^3.10.0"
     zustand "^3.5.13"
 
-"@react-three/fiber@^7.0.1":
+"@react-three/fiber@^7.0.18":
   version "7.0.18"
   resolved "https://registry.yarnpkg.com/@react-three/fiber/-/fiber-7.0.18.tgz#11fdb7401b982c0807951e508eae287fab6ac4a2"
   integrity sha512-mhEeai8zUsKncRzTL10a4IPbqYImzY+MA+uMbjmF6TcfIXzG0BAqBgfAwd5TGxIQhMor292hk38wGHBFeLpzFA==
@@ -213,10 +220,10 @@
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
-"@types/three@^0.129.1":
-  version "0.129.2"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.129.2.tgz#26d9e4ecffc8e31becfb119c494123f343f31f8f"
-  integrity sha512-fZDNRtUFnq3baNjDiAzi4QoHYcczWtEdsduH/tpiwk91fbVk8COJiT/iLoN3tIOjLKMySoYsjUfP0VTmUfZKLw==
+"@types/three@^0.134.0":
+  version "0.134.0"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.134.0.tgz#22ae9892f4490faaf35f0ccea127df18407b8ab3"
+  integrity sha512-4YB+99Rgqq27EjiYTItEoZtdjLnTh8W9LxowgpC9eWsjaQJIL4Kn/ZcUKAnW3gB/jS4hqGN8iqmid+RcUZDzpA==
 
 "@webgpu/glslang@^0.0.15":
   version "0.0.15"
@@ -617,7 +624,7 @@ del@^6.0.0:
     rimraf "^3.0.2"
     slash "^3.0.0"
 
-detect-gpu@^3.1.21:
+detect-gpu@^3.1.25:
   version "3.1.25"
   resolved "https://registry.yarnpkg.com/detect-gpu/-/detect-gpu-3.1.25.tgz#d173fc4003c93bb2134e0c4d43410c64cd2e919b"
   integrity sha512-mYy+lVU8+jbQV2jEmdrdE/MWvqfsbDfUBPJQln7Yf2KC8PuEOUspB+clZAIfeSGZBS0m1azOEuVnk5mvW4511Q==
@@ -1711,7 +1718,7 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-react-composer@^5.0.1:
+react-composer@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/react-composer/-/react-composer-5.0.2.tgz#131cb53326abb07363795ad3abb0dc4a3005ee05"
   integrity sha512-6E2UNjUF0e7KRY+/faU2Hv7D9zagXnYdTfSSCGdYfuds6mRnVpN19vrbHXShaQzJNVXL4VOUb8qq6DvClDIG1g==
@@ -2027,15 +2034,15 @@ tempy@^2.0.0:
     type-fest "^2.0.0"
     unique-string "^3.0.0"
 
-three-mesh-bvh@^0.5.0:
+three-mesh-bvh@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/three-mesh-bvh/-/three-mesh-bvh-0.5.2.tgz#6d435330e4aa686dcdbf70330c8eb5dd42b12737"
   integrity sha512-DAKWujkp8xpSBqGiIsZbZC1utxAbYBg0SShQk9LdOG/xWWl1/OLK76eXDGfov47trl3L7PUTHi0hhRvZdVro1Q==
 
-three-stdlib@^2.5.4:
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/three-stdlib/-/three-stdlib-2.5.5.tgz#ee2d6cf84ca366f5e8e74c0dbe76211532a8b912"
-  integrity sha512-9Yba7LbwvKSqk09Pu+HHSnOTAhCWcLsIV9r2p0mcerVaqUpL1uKY4BSTzbWkhh4mMA/s/etlW0fYdL3pW/pPjg==
+three-stdlib@^2.5.9:
+  version "2.5.9"
+  resolved "https://registry.yarnpkg.com/three-stdlib/-/three-stdlib-2.5.9.tgz#dd0e7a8854d41a16b3f49fff8fb4471258aac8f9"
+  integrity sha512-z9lqprjZLIu2lTd9+ux2208uNPY7ZXJoo7Q/ObcT1YFfJKrm0kOCKa09GDt9CpB75ddUKhgAaJm6T9T3o1ofgA==
   dependencies:
     "@babel/runtime" "^7.14.6"
     "@webgpu/glslang" "^0.0.15"
@@ -2049,10 +2056,10 @@ three-stdlib@^2.5.4:
     potpack "^1.0.1"
     zstddec "^0.0.2"
 
-three@^0.129.0:
-  version "0.129.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.129.0.tgz#f5e530bbc96eac5d5b4749cb5da886ef0d42f554"
-  integrity sha512-wiWio1yVRg2Oj6WEWsTHQo5eSzYpEwSBtPSi3OofNpvFbf26HFfb9kw4FZJNjII4qxzp0b1xLB11+tKkBGB1ZA==
+three@^0.134.0:
+  version "0.134.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.134.0.tgz#d7ad4d85d050da0861bf39749b06ddfb5f17157f"
+  integrity sha512-LbBerg7GaSPjYtTOnu41AMp7tV6efUNR3p4Wk5NzkSsNTBuA5mDGOfwwZL1jhhVMLx9V20HolIUo0+U3AXehbg==
 
 timsort@^0.3.0:
   version "0.3.0"
@@ -2234,6 +2241,6 @@ zstddec@^0.0.2:
   integrity sha512-DCo0oxvcvOTGP/f5FA6tz2Z6wF+FIcEApSTu0zV5sQgn9hoT5lZ9YRAKUraxt9oP7l4e8TnNdi8IZTCX6WCkwA==
 
 zustand@^3.5.1, zustand@^3.5.13:
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/zustand/-/zustand-3.6.4.tgz#2aed404072e3d4538fbc380bcf4eee88b174051d"
-  integrity sha512-liH2ZaEOSiEaVEl7N0CVzoKYZCQPpibfsIgB2ksrjvfu17WME8Eh7XV/MCi5OQM5AnbuYbLowplR03UP5yrNYw==
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-3.6.5.tgz#42a459397907d6bf0e2375351394733b2f83ee44"
+  integrity sha512-/WfLJuXiEJimt61KGMHebrFBwckkCHGhAgVXTgPQHl6IMzjqm6MREb1OnDSnCRiSmRdhgdFCctceg6tSm79hiw==

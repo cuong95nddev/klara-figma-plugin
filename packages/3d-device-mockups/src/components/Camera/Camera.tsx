@@ -1,6 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import CameraControls from "camera-controls";
-import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { MathUtils, PerspectiveCamera } from "three";
 import { CustomOrbitControls } from "./CameraControl";
 import CameraState from "./CameraState";

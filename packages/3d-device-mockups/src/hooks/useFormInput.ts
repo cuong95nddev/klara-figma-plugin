@@ -6,8 +6,8 @@ function useFormInput(initialValue: string | number | undefined = "") {
     setValue(initialValue);
   }, [initialValue]);
   
-  const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
-    setValue(event.currentTarget.value);
+  const handleChange = (value: string | number) => {
+    setValue(value);
   };
 
   return {

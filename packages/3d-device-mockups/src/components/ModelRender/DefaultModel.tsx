@@ -1,10 +1,10 @@
-import iMac2021 from "../../assets/glb/imac-2021.glb";
+import iphone13Pro from "../../assets/glb/iPhone 13 Pro.glb";
 import Model from "./Model";
 
 const defaultModel: Model[] = [
   {
     name: "IMac 2021",
-    path: iMac2021,
+    path: iphone13Pro,
   },
 ];
 

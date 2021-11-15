@@ -46,15 +46,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { log } from '@create-figma-plugin/common';
-import sade from 'sade';
-import { buildAsync } from './build-async.js';
-import { watchAsync } from './watch-async/watch-async.js';
-sade('build-figma-plugin', true)
-    .describe('Build a Figma/FigJam plugin')
-    .option('-m, --minify', 'Minify the plugin bundle', false)
-    .option('-t, --typecheck', 'Type check the plugin code before build', false)
-    .option('-w, --watch', 'Rebuild the plugin on code changes', false)
+import { log } from "@create-figma-plugin/common";
+import sade from "sade";
+import { buildAsync } from "./build-async.js";
+import { watchAsync } from "./watch-async/watch-async.js";
+sade("build-figma-plugin", true)
+    .describe("Build a Figma/FigJam plugin")
+    .option("-t, --typecheck", "Type check the plugin code before build", false)
+    .option("-w, --watch", "Rebuild the plugin on code changes", false)
+    .option("-prod, --production", "Build the plugin with production mode", false)
     .action(function (options) {
     return __awaiter(this, void 0, void 0, function () {
         var buildOptions;
@@ -62,8 +62,8 @@ sade('build-figma-plugin', true)
             switch (_a.label) {
                 case 0:
                     buildOptions = {
-                        minify: options.minify,
-                        typecheck: options.typecheck
+                        typecheck: options.typecheck,
+                        prod: options.prod
                     };
                     if (!(options.watch === true)) return [3 /*break*/, 3];
                     log.clearViewport();

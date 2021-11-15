@@ -5,12 +5,10 @@ import {
   ConfigFile,
   ConfigRelaunchButton,
   constants,
-  readConfigAsync
+  readConfigAsync,
 } from "@create-figma-plugin/common";
-import { BuildOptions } from "esbuild";
-import fs from "fs-extra";
 import indentString from "indent-string";
-import { join, resolve } from "path";
+import { join } from "path";
 import webpack from "webpack";
 import VirtualModulesPlugin from "webpack-virtual-modules";
 
@@ -18,41 +16,32 @@ interface EntryFile extends ConfigFile {
   readonly commandId: string;
 }
 
-export async function buildBundlesAsync(minify: boolean): Promise<void> {
+export async function buildBundlesAsync(
+  prod: boolean
+): Promise<void> {
   const config = await readConfigAsync();
   await Promise.all([
     buildMainBundleAsync({
       config,
-      minify,
+      prod,
     }),
     buildUiBundleAsync({
       config,
-      minify,
+      prod,
     }),
   ]);
 }
 
-async function overrideEsbuildConfigAsync(
-  buildOptions: BuildOptions,
-  esbuildConfigFilePath: string
-): Promise<BuildOptions> {
-  const absolutePath = resolve(esbuildConfigFilePath);
-  if ((await fs.pathExists(absolutePath)) === false) {
-    return buildOptions;
-  }
-  const { default: overrideEsbuildConfig } = await import(absolutePath);
-  return overrideEsbuildConfig(buildOptions);
-}
-
 async function buildMainBundleAsync(options: {
   config: Config;
-  minify: boolean;
+  prod: boolean;
 }): Promise<void> {
-  const { config, minify } = options;
+  const { config, prod } = options;
   const js = createMainEntryFile(config);
   const virtualModules = new VirtualModulesPlugin({ "./main.js": js });
   const webpackOptions: webpack.Configuration = {
-    mode: "production",
+    mode: prod ? "production" : "development",
+    devtool: prod ? false : "inline-source-map",
     entry: {
       app: ["@babel/polyfill", "./main.js"],
     },
@@ -93,19 +82,16 @@ async function buildMainBundleAsync(options: {
 
   const compiler = webpack(webpackOptions);
 
-  compiler.run((err, stats) => {
-    if (err) {
-      throw err;
-    }
+  await new Promise((resolve, reject) => {
+    compiler.run((err, stats) => {
+      if (err) {
+        throw err;
+      }
 
-    console.log(
-      stats?.toString({
-        chunks: false,
-        colors: true,
-      })
-    );
-
-    compiler.close((closeErr) => {});
+      compiler.close((closeErr) => {
+        resolve(null);
+      });
+    });
   });
 }
 
@@ -132,9 +118,9 @@ function createMainEntryFile(config: Config): string {
 
 async function buildUiBundleAsync(options: {
   config: Config;
-  minify: boolean;
+  prod: boolean;
 }): Promise<void> {
-  const { config, minify } = options;
+  const { config, prod } = options;
   const js = createUiEntryFile(config);
   if (js === null) {
     return;
@@ -143,7 +129,8 @@ async function buildUiBundleAsync(options: {
   const virtualModules = new VirtualModulesPlugin({ "./ui.js": js });
 
   const webpackOptions: webpack.Configuration = {
-    mode: "production",
+    mode: prod ? "production" : "development",
+    devtool: prod ? false : "inline-source-map",
     entry: {
       app: ["./ui.js"],
     },
@@ -187,19 +174,16 @@ async function buildUiBundleAsync(options: {
 
   const compiler = webpack(webpackOptions);
 
-  compiler.run((err, stats) => {
-    if (err) {
-      throw err;
-    }
+  await new Promise((resolve, reject) => {
+    compiler.run((err, stats) => {
+      if (err) {
+        throw err;
+      }
 
-    console.log(
-      stats?.toString({
-        chunks: false,
-        colors: true,
-      })
-    );
-
-    compiler.close((closeErr) => {});
+      compiler.close((closeErr) => {
+        resolve(null);
+      });
+    });
   });
 }
 

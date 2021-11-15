@@ -34,49 +34,48 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { constants, log } from '@create-figma-plugin/common';
-import { watch } from 'chokidar';
-import { yellow } from 'kleur/colors';
-import { buildBundlesAsync } from '../utilities/build-bundles-async/build-bundles-async.js';
-import { buildManifestAsync } from '../utilities/build-manifest-async.js';
-import { trackElapsedTime } from '../utilities/track-elapsed-time.js';
-import { typeCheckWatch } from '../utilities/type-check/type-check-watch.js';
-import { watchIgnoreRegex } from './watch-ignore-regex.js';
-var cssRegex = /\.css$/;
+import { constants, log } from "@create-figma-plugin/common";
+import { watch } from "chokidar";
+import { yellow } from "kleur/colors";
+import { buildBundlesAsync } from "../utilities/build-bundles-async/build-bundles-async.js";
+import { buildManifestAsync } from "../utilities/build-manifest-async.js";
+import { trackElapsedTime } from "../utilities/track-elapsed-time.js";
+import { typeCheckWatch } from "../utilities/type-check/type-check-watch.js";
+import { watchIgnoreRegex } from "./watch-ignore-regex.js";
 var packageJsonRegex = /^package\.json$/;
 export function watchAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var minify, typecheck, endTypeCheckWatch, watcher;
+        var prod, typecheck, endTypeCheckWatch, watcher;
         return __generator(this, function (_a) {
-            minify = options.minify, typecheck = options.typecheck;
+            prod = options.prod, typecheck = options.typecheck;
             if (typecheck === true) {
                 endTypeCheckWatch = typeCheckWatch();
             }
             watcher = watch([
-                '**/*.{css,js,json,jsx,ts,tsx}',
+                "**/*.{css,js,json,jsx,ts,tsx}",
                 constants.build.mainConfigFilePath,
                 constants.build.manifestConfigFilePath,
                 constants.build.uiConfigFilePath,
-                'package.json',
-                'tsconfig.json'
+                "package.json",
+                "tsconfig.json",
             ], {
                 ignored: function (path) {
                     return watchIgnoreRegex.test(path) === true;
                 }
             });
             if (typecheck === false) {
-                watcher.on('ready', function () {
-                    log.info('Watching...');
+                watcher.on("ready", function () {
+                    log.info("Watching...");
                 });
             }
-            watcher.on('change', function (file) {
+            watcher.on("change", function (file) {
                 return __awaiter(this, void 0, void 0, function () {
                     var getElapsedTime, promises, error_1;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
-                                if (typecheck === true && file.indexOf('tsconfig.json') !== -1) {
+                                if (typecheck === true && file.indexOf("tsconfig.json") !== -1) {
                                     endTypeCheckWatch();
                                 }
                                 log.clearViewport();
@@ -84,18 +83,18 @@ export function watchAsync(options) {
                                 log.info("Changed " + yellow(file));
                                 promises = [];
                                 if (packageJsonRegex.test(file) === true) {
-                                    promises.push(buildManifestAsync(minify));
+                                    promises.push(buildManifestAsync(prod));
                                 }
-                                promises.push(buildBundlesAsync(minify));
+                                promises.push(buildBundlesAsync(prod));
                                 return [4 /*yield*/, Promise.all(promises)];
                             case 1:
                                 _a.sent();
                                 log.success("Built in " + getElapsedTime());
                                 if (typecheck === false) {
-                                    log.info('Watching...');
+                                    log.info("Watching...");
                                     return [2 /*return*/];
                                 }
-                                if (file.indexOf('tsconfig.json') !== -1) {
+                                if (file.indexOf("tsconfig.json") !== -1) {
                                     // Restart the type-check watcher program
                                     endTypeCheckWatch = typeCheckWatch();
                                 }

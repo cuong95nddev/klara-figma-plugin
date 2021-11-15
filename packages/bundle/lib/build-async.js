@@ -41,11 +41,11 @@ import { trackElapsedTime } from './utilities/track-elapsed-time.js';
 import { typeCheckBuild } from './utilities/type-check/type-check-build.js';
 export function buildAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var minify, typecheck, clearPreviousLine, getTypeCheckElapsedTime, typeCheckElapsedTime, getBuildElapsedTime, buildElapsedTime, getBuildElapsedTime, buildElapsedTime, error_1;
+        var typecheck, clearPreviousLine, prod, getTypeCheckElapsedTime, typeCheckElapsedTime, getBuildElapsedTime, buildElapsedTime, getBuildElapsedTime, buildElapsedTime, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    minify = options.minify, typecheck = options.typecheck, clearPreviousLine = options.clearPreviousLine;
+                    typecheck = options.typecheck, clearPreviousLine = options.clearPreviousLine, prod = options.prod;
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 6, , 7]);
@@ -59,7 +59,7 @@ export function buildAsync(options) {
                     });
                     log.info('Building...');
                     getBuildElapsedTime = trackElapsedTime();
-                    return [4 /*yield*/, Promise.all([buildBundlesAsync(minify), buildManifestAsync(minify)])];
+                    return [4 /*yield*/, Promise.all([buildBundlesAsync(prod), buildManifestAsync(prod)])];
                 case 2:
                     _a.sent();
                     buildElapsedTime = getBuildElapsedTime();
@@ -69,8 +69,8 @@ export function buildAsync(options) {
                     log.info('Building...');
                     getBuildElapsedTime = trackElapsedTime();
                     return [4 /*yield*/, Promise.all([
-                            buildBundlesAsync(minify),
-                            buildManifestAsync(minify)
+                            buildBundlesAsync(prod),
+                            buildManifestAsync(prod)
                         ])];
                 case 4:
                     _a.sent();

@@ -45,13 +45,12 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import { constants, readConfigAsync } from "@create-figma-plugin/common";
-import fs from "fs-extra";
+import { constants, readConfigAsync, } from "@create-figma-plugin/common";
 import indentString from "indent-string";
-import { join, resolve } from "path";
+import { join } from "path";
 import webpack from "webpack";
 import VirtualModulesPlugin from "webpack-virtual-modules";
-export function buildBundlesAsync(minify) {
+export function buildBundlesAsync(prod) {
     return __awaiter(this, void 0, void 0, function () {
         var config;
         return __generator(this, function (_a) {
@@ -62,11 +61,11 @@ export function buildBundlesAsync(minify) {
                     return [4 /*yield*/, Promise.all([
                             buildMainBundleAsync({
                                 config: config,
-                                minify: minify
+                                prod: prod
                             }),
                             buildUiBundleAsync({
                                 config: config,
-                                minify: minify
+                                prod: prod
                             }),
                         ])];
                 case 2:
@@ -76,84 +75,70 @@ export function buildBundlesAsync(minify) {
         });
     });
 }
-function overrideEsbuildConfigAsync(buildOptions, esbuildConfigFilePath) {
+function buildMainBundleAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var absolutePath, overrideEsbuildConfig;
+        var config, prod, js, virtualModules, webpackOptions, compiler;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    absolutePath = resolve(esbuildConfigFilePath);
-                    return [4 /*yield*/, fs.pathExists(absolutePath)];
-                case 1:
-                    if ((_a.sent()) === false) {
-                        return [2 /*return*/, buildOptions];
-                    }
-                    return [4 /*yield*/, import(absolutePath)];
-                case 2:
-                    overrideEsbuildConfig = (_a.sent())["default"];
-                    return [2 /*return*/, overrideEsbuildConfig(buildOptions)];
-            }
-        });
-    });
-}
-function buildMainBundleAsync(options) {
-    return __awaiter(this, void 0, void 0, function () {
-        var config, minify, js, virtualModules, webpackOptions, compiler;
-        return __generator(this, function (_a) {
-            config = options.config, minify = options.minify;
-            js = createMainEntryFile(config);
-            virtualModules = new VirtualModulesPlugin({ "./main.js": js });
-            webpackOptions = {
-                mode: "production",
-                entry: {
-                    app: ["@babel/polyfill", "./main.js"]
-                },
-                output: {
-                    path: join(process.cwd(), constants.build.buildDirectoryName),
-                    filename: "main.js"
-                },
-                module: {
-                    rules: [
-                        {
-                            test: /\.js?$/,
-                            exclude: /(node_modules)/,
-                            use: {
-                                loader: "babel-loader",
-                                options: {
-                                    presets: ["@babel/preset-env"]
+                    config = options.config, prod = options.prod;
+                    js = createMainEntryFile(config);
+                    virtualModules = new VirtualModulesPlugin({ "./main.js": js });
+                    webpackOptions = {
+                        mode: prod ? "production" : "development",
+                        devtool: prod ? false : "inline-source-map",
+                        entry: {
+                            app: ["@babel/polyfill", "./main.js"]
+                        },
+                        output: {
+                            path: join(process.cwd(), constants.build.buildDirectoryName),
+                            filename: "main.js"
+                        },
+                        module: {
+                            rules: [
+                                {
+                                    test: /\.js?$/,
+                                    exclude: /(node_modules)/,
+                                    use: {
+                                        loader: "babel-loader",
+                                        options: {
+                                            presets: ["@babel/preset-env"]
+                                        }
+                                    }
+                                },
+                                {
+                                    test: /\.tsx?$/,
+                                    use: "ts-loader",
+                                    exclude: /node_modules/
+                                },
+                                {
+                                    test: /\.m?js/,
+                                    resolve: {
+                                        fullySpecified: false
+                                    }
+                                },
+                            ]
+                        },
+                        resolve: {
+                            extensions: [".tsx", ".ts", ".js", ".mjs"]
+                        },
+                        plugins: [virtualModules]
+                    };
+                    compiler = webpack(webpackOptions);
+                    return [4 /*yield*/, new Promise(function (resolve, reject) {
+                            compiler.run(function (err, stats) {
+                                if (err) {
+                                    throw err;
                                 }
-                            }
-                        },
-                        {
-                            test: /\.tsx?$/,
-                            use: "ts-loader",
-                            exclude: /node_modules/
-                        },
-                        {
-                            test: /\.m?js/,
-                            resolve: {
-                                fullySpecified: false
-                            }
-                        },
-                    ]
-                },
-                resolve: {
-                    extensions: [".tsx", ".ts", ".js", ".mjs"]
-                },
-                plugins: [virtualModules]
-            };
-            compiler = webpack(webpackOptions);
-            compiler.run(function (err, stats) {
-                if (err) {
-                    throw err;
-                }
-                console.log(stats === null || stats === void 0 ? void 0 : stats.toString({
-                    chunks: false,
-                    colors: true
-                }));
-                compiler.close(function (closeErr) { });
-            });
-            return [2 /*return*/];
+                                compiler.close(function (closeErr) {
+                                    resolve(null);
+                                });
+                            });
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
         });
     });
 }
@@ -171,68 +156,74 @@ function createMainEntryFile(config) {
 }
 function buildUiBundleAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var config, minify, js, virtualModules, webpackOptions, compiler;
+        var config, prod, js, virtualModules, webpackOptions, compiler;
         return __generator(this, function (_a) {
-            config = options.config, minify = options.minify;
-            js = createUiEntryFile(config);
-            if (js === null) {
-                return [2 /*return*/];
-            }
-            virtualModules = new VirtualModulesPlugin({ "./ui.js": js });
-            webpackOptions = {
-                mode: "production",
-                entry: {
-                    app: ["./ui.js"]
-                },
-                output: {
-                    path: join(process.cwd(), constants.build.buildDirectoryName),
-                    filename: "ui.js"
-                },
-                module: {
-                    rules: [
-                        {
-                            test: /\.tsx?$/,
-                            use: "ts-loader",
-                            exclude: /node_modules/
+            switch (_a.label) {
+                case 0:
+                    config = options.config, prod = options.prod;
+                    js = createUiEntryFile(config);
+                    if (js === null) {
+                        return [2 /*return*/];
+                    }
+                    virtualModules = new VirtualModulesPlugin({ "./ui.js": js });
+                    webpackOptions = {
+                        mode: prod ? "production" : "development",
+                        devtool: prod ? false : "inline-source-map",
+                        entry: {
+                            app: ["./ui.js"]
                         },
-                        {
-                            test: /\.css$/,
-                            use: [
-                                "style-loader",
+                        output: {
+                            path: join(process.cwd(), constants.build.buildDirectoryName),
+                            filename: "ui.js"
+                        },
+                        module: {
+                            rules: [
                                 {
-                                    loader: "css-loader"
+                                    test: /\.tsx?$/,
+                                    use: "ts-loader",
+                                    exclude: /node_modules/
+                                },
+                                {
+                                    test: /\.css$/,
+                                    use: [
+                                        "style-loader",
+                                        {
+                                            loader: "css-loader"
+                                        },
+                                    ]
+                                },
+                                {
+                                    test: /\.(png|jpg|gif|webp|svg|glb)$/,
+                                    loader: "url-loader"
+                                },
+                                {
+                                    test: /\.m?js/,
+                                    resolve: {
+                                        fullySpecified: false
+                                    }
                                 },
                             ]
                         },
-                        {
-                            test: /\.(png|jpg|gif|webp|svg|glb)$/,
-                            loader: "url-loader"
+                        resolve: {
+                            extensions: [".tsx", ".ts", ".jsx", ".js", ".mjs"]
                         },
-                        {
-                            test: /\.m?js/,
-                            resolve: {
-                                fullySpecified: false
-                            }
-                        },
-                    ]
-                },
-                resolve: {
-                    extensions: [".tsx", ".ts", ".jsx", ".js", ".mjs"]
-                },
-                plugins: [virtualModules]
-            };
-            compiler = webpack(webpackOptions);
-            compiler.run(function (err, stats) {
-                if (err) {
-                    throw err;
-                }
-                console.log(stats === null || stats === void 0 ? void 0 : stats.toString({
-                    chunks: false,
-                    colors: true
-                }));
-                compiler.close(function (closeErr) { });
-            });
-            return [2 /*return*/];
+                        plugins: [virtualModules]
+                    };
+                    compiler = webpack(webpackOptions);
+                    return [4 /*yield*/, new Promise(function (resolve, reject) {
+                            compiler.run(function (err, stats) {
+                                if (err) {
+                                    throw err;
+                                }
+                                compiler.close(function (closeErr) {
+                                    resolve(null);
+                                });
+                            });
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
         });
     });
 }

@@ -31,7 +31,7 @@
   },
   "scripts": {
     "postinstall": "patch-package",
-    "build": "build-figma-plugin --typecheck --minify",
+    "build": "build-figma-plugin --typecheck",
     "watch": "build-figma-plugin --typecheck --watch"
   },
   "figma-plugin": {

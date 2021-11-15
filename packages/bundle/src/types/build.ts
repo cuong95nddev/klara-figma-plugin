@@ -1,4 +1,4 @@
 export type BuildOptions = {
-  readonly minify: boolean
-  readonly typecheck: boolean
-}
+  readonly typecheck: boolean;
+  readonly prod: boolean;
+};

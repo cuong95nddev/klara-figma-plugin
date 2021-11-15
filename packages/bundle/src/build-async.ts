@@ -9,7 +9,7 @@ import { typeCheckBuild } from './utilities/type-check/type-check-build.js'
 export async function buildAsync(
   options: BuildOptions & { clearPreviousLine: boolean }
 ): Promise<void> {
-  const { minify, typecheck, clearPreviousLine } = options
+  const { typecheck, clearPreviousLine, prod } = options
   try {
     if (typecheck === true) {
       const getTypeCheckElapsedTime = trackElapsedTime()
@@ -21,15 +21,15 @@ export async function buildAsync(
       })
       log.info('Building...')
       const getBuildElapsedTime = trackElapsedTime()
-      await Promise.all([buildBundlesAsync(minify), buildManifestAsync(minify)])
+      await Promise.all([buildBundlesAsync(prod), buildManifestAsync(prod)])
       const buildElapsedTime = getBuildElapsedTime()
       log.success(`Built in ${buildElapsedTime}`, { clearPreviousLine })
     } else {
       log.info('Building...')
       const getBuildElapsedTime = trackElapsedTime()
       await Promise.all([
-        buildBundlesAsync(minify),
-        buildManifestAsync(minify)
+        buildBundlesAsync(prod),
+        buildManifestAsync(prod)
       ])
       const buildElapsedTime = getBuildElapsedTime()
       log.success(`Built in ${buildElapsedTime}`, { clearPreviousLine })

@@ -1,0 +1,10 @@
+{
+  "extends": "@create-figma-plugin/tsconfig",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "outDir": "lib",
+    "rootDir": "src",
+    "types": ["@types/node"]
+  },
+  "include": ["src/**/*.ts"],
+}

@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@create-figma-plugin/tsconfig": "^1.7.1",
-    "@klara-figma-plugin/build": "^1.0.0",
+    "@klara-figma-plugin/bundle": "^1.0.0",
     "@figma/plugin-typings": "1.37.0",
     "@types/lodash": "^4.14.171",
     "@types/react": "^17.0.11",

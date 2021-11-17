@@ -1,0 +1,13 @@
+0 silly argv {
+0 silly argv   _: [ 'add' ],
+0 silly argv   D: true,
+0 silly argv   dev: true,
+0 silly argv   globs: [],
+0 silly argv   lernaVersion: '4.0.0',
+0 silly argv   '$0': 'C:\\Users\\pvcuong\\AppData\\Roaming\\npm\\node_modules\\lerna\\cli.js',
+0 silly argv   pkg: 'types@postcss-preset-env'
+0 silly argv }
+1 notice cli v4.0.0
+2 verbose rootPath C:\Work\private\figma\klara-figma-plugin
+3 error types: No matching version found for types@postcss-preset-env.
+3 error     at module.exports (C:\Work\private\figma\klara-figma-plugin\node_modules\npm-pick-manifest\index.js:209:23)

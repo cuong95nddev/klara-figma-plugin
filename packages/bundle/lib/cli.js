@@ -52,9 +52,10 @@ import { buildAsync } from "./build-async.js";
 import { watchAsync } from "./watch-async/watch-async.js";
 sade("build-figma-plugin", true)
     .describe("Build a Figma/FigJam plugin")
-    .option("-t, --typecheck", "Type check the plugin code before build", false)
     .option("-w, --watch", "Rebuild the plugin on code changes", false)
     .option("-prod, --production", "Build the plugin with production mode", false)
+    .option("-sm, --speedMeasure", "SpeedMeasurePlugin", false)
+    .option("-ba, --bundleAnalyzer", "BundleAnalyzerPlugin", false)
     .action(function (options) {
     return __awaiter(this, void 0, void 0, function () {
         var buildOptions;
@@ -62,12 +63,13 @@ sade("build-figma-plugin", true)
             switch (_a.label) {
                 case 0:
                     buildOptions = {
-                        typecheck: options.typecheck,
-                        prod: options.prod
+                        prod: options.prod,
+                        speedMeasure: options.speedMeasure,
+                        bundleAnalyzer: options.bundleAnalyzer
                     };
                     if (!(options.watch === true)) return [3 /*break*/, 3];
                     log.clearViewport();
-                    return [4 /*yield*/, buildAsync(__assign(__assign({}, buildOptions), { clearPreviousLine: true, typecheck: false }))];
+                    return [4 /*yield*/, buildAsync(__assign(__assign({}, buildOptions), { clearPreviousLine: true }))];
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, watchAsync(buildOptions)];

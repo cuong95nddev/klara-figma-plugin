@@ -5,17 +5,13 @@ import { BuildOptions } from "../types/build.js";
 import { buildBundlesAsync } from "../utilities/build-bundles-async/build-bundles-async.js";
 import { buildManifestAsync } from "../utilities/build-manifest-async.js";
 import { trackElapsedTime } from "../utilities/track-elapsed-time.js";
-import { typeCheckWatch } from "../utilities/type-check/type-check-watch.js";
 import { watchIgnoreRegex } from "./watch-ignore-regex.js";
 
 const packageJsonRegex = /^package\.json$/;
 
 export async function watchAsync(options: BuildOptions): Promise<void> {
-  const { prod, typecheck } = options;
+  const { prod } = options;
   let endTypeCheckWatch: () => void;
-  if (typecheck === true) {
-    endTypeCheckWatch = typeCheckWatch();
-  }
   const watcher = watch(
     [
       "**/*.{css,js,json,jsx,ts,tsx}",
@@ -31,16 +27,11 @@ export async function watchAsync(options: BuildOptions): Promise<void> {
       },
     }
   );
-  if (typecheck === false) {
-    watcher.on("ready", function (): void {
-      log.info("Watching...");
-    });
-  }
+  watcher.on("ready", function (): void {
+    log.info("Watching...");
+  });
   watcher.on("change", async function (file: string): Promise<void> {
     try {
-      if (typecheck === true && file.indexOf("tsconfig.json") !== -1) {
-        endTypeCheckWatch();
-      }
       log.clearViewport();
       const getElapsedTime = trackElapsedTime();
       log.info(`Changed ${yellow(file)}`);
@@ -48,17 +39,10 @@ export async function watchAsync(options: BuildOptions): Promise<void> {
       if (packageJsonRegex.test(file) === true) {
         promises.push(buildManifestAsync(prod));
       }
-      promises.push(buildBundlesAsync(prod));
+      promises.push(buildBundlesAsync(false, false, false));
       await Promise.all(promises);
       log.success(`Built in ${getElapsedTime()}`);
-      if (typecheck === false) {
-        log.info("Watching...");
-        return;
-      }
-      if (file.indexOf("tsconfig.json") !== -1) {
-        // Restart the type-check watcher program
-        endTypeCheckWatch = typeCheckWatch();
-      }
+      log.info("Watching...");
     } catch (error: any) {
       log.error(error.message);
     }

@@ -46,11 +46,15 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import { constants, readConfigAsync, } from "@create-figma-plugin/common";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import indentString from "indent-string";
-import { join } from "path";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import path, { join } from "path";
+import SpeedMeasurePlugin from "speed-measure-webpack-plugin";
 import webpack from "webpack";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import VirtualModulesPlugin from "webpack-virtual-modules";
-export function buildBundlesAsync(prod) {
+export function buildBundlesAsync(prod, speedMeasure, bundleAnalyzer) {
     return __awaiter(this, void 0, void 0, function () {
         var config;
         return __generator(this, function (_a) {
@@ -61,11 +65,15 @@ export function buildBundlesAsync(prod) {
                     return [4 /*yield*/, Promise.all([
                             buildMainBundleAsync({
                                 config: config,
-                                prod: prod
+                                prod: prod,
+                                speedMeasure: speedMeasure,
+                                bundleAnalyzer: bundleAnalyzer
                             }),
                             buildUiBundleAsync({
                                 config: config,
-                                prod: prod
+                                prod: prod,
+                                speedMeasure: speedMeasure,
+                                bundleAnalyzer: bundleAnalyzer
                             }),
                         ])];
                 case 2:
@@ -77,13 +85,19 @@ export function buildBundlesAsync(prod) {
 }
 function buildMainBundleAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var config, prod, js, virtualModules, webpackOptions, compiler;
+        var config, prod, speedMeasure, bundleAnalyzer, js, virtualModules, plugins, webpackOptions, compiler, speedMeasurePlugin;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    config = options.config, prod = options.prod;
+                    config = options.config, prod = options.prod, speedMeasure = options.speedMeasure, bundleAnalyzer = options.bundleAnalyzer;
                     js = createMainEntryFile(config);
                     virtualModules = new VirtualModulesPlugin({ "./main.js": js });
+                    plugins = [];
+                    plugins.push(virtualModules);
+                    plugins.push(new ForkTsCheckerWebpackPlugin());
+                    if (bundleAnalyzer) {
+                        plugins.push(new BundleAnalyzerPlugin());
+                    }
                     webpackOptions = {
                         mode: prod ? "production" : "development",
                         devtool: prod ? false : "inline-source-map",
@@ -98,17 +112,25 @@ function buildMainBundleAsync(options) {
                             rules: [
                                 {
                                     test: /\.js?$/,
+                                    include: path.resolve(process.cwd(), "src"),
                                     exclude: /(node_modules)/,
                                     use: {
                                         loader: "babel-loader",
                                         options: {
-                                            presets: ["@babel/preset-env"]
+                                            presets: ["@babel/preset-env"],
+                                            cacheDirectory: true
                                         }
                                     }
                                 },
                                 {
                                     test: /\.tsx?$/,
-                                    use: "ts-loader",
+                                    use: {
+                                        loader: "ts-loader",
+                                        options: {
+                                            transpileOnly: true
+                                        }
+                                    },
+                                    include: path.resolve(process.cwd(), "src"),
                                     exclude: /node_modules/
                                 },
                                 {
@@ -120,16 +142,28 @@ function buildMainBundleAsync(options) {
                             ]
                         },
                         resolve: {
-                            extensions: [".tsx", ".ts", ".js", ".mjs"]
+                            extensions: [".ts", ".js"]
                         },
-                        plugins: [virtualModules]
+                        plugins: plugins
                     };
-                    compiler = webpack(webpackOptions);
+                    if (speedMeasure) {
+                        speedMeasurePlugin = new SpeedMeasurePlugin().wrap(webpackOptions);
+                        compiler = webpack(speedMeasurePlugin);
+                    }
+                    else {
+                        compiler = webpack(webpackOptions);
+                    }
                     return [4 /*yield*/, new Promise(function (resolve, reject) {
                             compiler.run(function (err, stats) {
                                 if (err) {
                                     throw err;
                                 }
+                                // console.log(
+                                //   stats?.toString({
+                                //     chunks: false,
+                                //     colors: true,
+                                //   })
+                                // );
                                 compiler.close(function (closeErr) {
                                     resolve(null);
                                 });
@@ -156,16 +190,25 @@ function createMainEntryFile(config) {
 }
 function buildUiBundleAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var config, prod, js, virtualModules, webpackOptions, compiler;
+        var config, prod, speedMeasure, bundleAnalyzer, js, virtualModules, plugins, webpackOptions, compiler, speedMeasurePlugin;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    config = options.config, prod = options.prod;
+                    config = options.config, prod = options.prod, speedMeasure = options.speedMeasure, bundleAnalyzer = options.bundleAnalyzer;
                     js = createUiEntryFile(config);
                     if (js === null) {
                         return [2 /*return*/];
                     }
                     virtualModules = new VirtualModulesPlugin({ "./ui.js": js });
+                    plugins = [];
+                    plugins.push(virtualModules);
+                    if (prod) {
+                        plugins.push(new MiniCssExtractPlugin());
+                    }
+                    plugins.push(new ForkTsCheckerWebpackPlugin());
+                    if (bundleAnalyzer) {
+                        plugins.push(new BundleAnalyzerPlugin());
+                    }
                     webpackOptions = {
                         mode: prod ? "production" : "development",
                         devtool: prod ? false : "inline-source-map",
@@ -180,15 +223,53 @@ function buildUiBundleAsync(options) {
                             rules: [
                                 {
                                     test: /\.tsx?$/,
-                                    use: "ts-loader",
+                                    include: path.resolve(process.cwd(), "src"),
+                                    use: {
+                                        loader: "ts-loader",
+                                        options: {
+                                            transpileOnly: true
+                                        }
+                                    },
                                     exclude: /node_modules/
                                 },
                                 {
-                                    test: /\.css$/,
+                                    test: /\.(sa|sc|c)ss$/i,
+                                    exclude: /\.module\.(sa|sc|c)ss$/i,
                                     use: [
-                                        "style-loader",
                                         {
-                                            loader: "css-loader"
+                                            loader: prod ? MiniCssExtractPlugin.loader : "style-loader"
+                                        },
+                                        {
+                                            loader: "css-loader",
+                                            options: {
+                                                importLoaders: 1,
+                                                modules: {
+                                                    mode: "icss"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            loader: "sass-loader"
+                                        },
+                                    ]
+                                },
+                                {
+                                    test: /\.module\.(sa|sc|c)ss$/i,
+                                    use: [
+                                        {
+                                            loader: prod ? MiniCssExtractPlugin.loader : "style-loader"
+                                        },
+                                        {
+                                            loader: "css-loader",
+                                            options: {
+                                                importLoaders: 1,
+                                                modules: {
+                                                    mode: "local"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            loader: "sass-loader"
                                         },
                                     ]
                                 },
@@ -205,16 +286,28 @@ function buildUiBundleAsync(options) {
                             ]
                         },
                         resolve: {
-                            extensions: [".tsx", ".ts", ".jsx", ".js", ".mjs"]
+                            extensions: [".tsx", ".ts", ".js"]
                         },
-                        plugins: [virtualModules]
+                        plugins: plugins
                     };
-                    compiler = webpack(webpackOptions);
+                    if (speedMeasure) {
+                        speedMeasurePlugin = new SpeedMeasurePlugin().wrap(webpackOptions);
+                        compiler = webpack(speedMeasurePlugin);
+                    }
+                    else {
+                        compiler = webpack(webpackOptions);
+                    }
                     return [4 /*yield*/, new Promise(function (resolve, reject) {
                             compiler.run(function (err, stats) {
                                 if (err) {
                                     throw err;
                                 }
+                                // console.log(
+                                //   stats?.toString({
+                                //     chunks: false,
+                                //     colors: true,
+                                //   })
+                                // );
                                 compiler.close(function (closeErr) {
                                     resolve(null);
                                 });

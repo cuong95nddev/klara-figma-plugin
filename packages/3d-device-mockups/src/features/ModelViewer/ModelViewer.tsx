@@ -25,7 +25,7 @@ const ModelViewer = () => {
     on<SelectionChangedHandler>(
       "SELECTION_CHANGED",
       async (node: Uint8Array) => {
-        const result: string = await readAsDataURL(node) as string;
+        const result: string = (await readAsDataURL(node)) as string;
         setSelection(result);
       }
     );

@@ -34,56 +34,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { log } from '@create-figma-plugin/common';
-import { buildBundlesAsync } from './utilities/build-bundles-async/build-bundles-async.js';
-import { buildManifestAsync } from './utilities/build-manifest-async.js';
-import { trackElapsedTime } from './utilities/track-elapsed-time.js';
-import { typeCheckBuild } from './utilities/type-check/type-check-build.js';
+import { log } from "@create-figma-plugin/common";
+import { buildBundlesAsync } from "./utilities/build-bundles-async/build-bundles-async.js";
+import { buildManifestAsync } from "./utilities/build-manifest-async.js";
+import { trackElapsedTime } from "./utilities/track-elapsed-time.js";
 export function buildAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var typecheck, clearPreviousLine, prod, getTypeCheckElapsedTime, typeCheckElapsedTime, getBuildElapsedTime, buildElapsedTime, getBuildElapsedTime, buildElapsedTime, error_1;
+        var clearPreviousLine, prod, speedMeasure, bundleAnalyzer, getBuildElapsedTime, buildElapsedTime, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    typecheck = options.typecheck, clearPreviousLine = options.clearPreviousLine, prod = options.prod;
+                    clearPreviousLine = options.clearPreviousLine, prod = options.prod, speedMeasure = options.speedMeasure, bundleAnalyzer = options.bundleAnalyzer;
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 6, , 7]);
-                    if (!(typecheck === true)) return [3 /*break*/, 3];
-                    getTypeCheckElapsedTime = trackElapsedTime();
-                    log.info('Type checking...');
-                    typeCheckBuild();
-                    typeCheckElapsedTime = getTypeCheckElapsedTime();
-                    log.success("Type checked in " + typeCheckElapsedTime, {
-                        clearPreviousLine: clearPreviousLine
-                    });
-                    log.info('Building...');
+                    _a.trys.push([1, 3, , 4]);
+                    log.info("Building...");
                     getBuildElapsedTime = trackElapsedTime();
-                    return [4 /*yield*/, Promise.all([buildBundlesAsync(prod), buildManifestAsync(prod)])];
+                    return [4 /*yield*/, Promise.all([buildBundlesAsync(prod, speedMeasure, bundleAnalyzer), buildManifestAsync(prod)])];
                 case 2:
                     _a.sent();
                     buildElapsedTime = getBuildElapsedTime();
                     log.success("Built in " + buildElapsedTime, { clearPreviousLine: clearPreviousLine });
-                    return [3 /*break*/, 5];
+                    return [3 /*break*/, 4];
                 case 3:
-                    log.info('Building...');
-                    getBuildElapsedTime = trackElapsedTime();
-                    return [4 /*yield*/, Promise.all([
-                            buildBundlesAsync(prod),
-                            buildManifestAsync(prod)
-                        ])];
-                case 4:
-                    _a.sent();
-                    buildElapsedTime = getBuildElapsedTime();
-                    log.success("Built in " + buildElapsedTime, { clearPreviousLine: clearPreviousLine });
-                    _a.label = 5;
-                case 5: return [3 /*break*/, 7];
-                case 6:
                     error_1 = _a.sent();
                     log.error(error_1.message);
                     process.exit(1);
-                    return [3 /*break*/, 7];
-                case 7: return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     });

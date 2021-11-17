@@ -9,7 +9,7 @@ const initialState: ViewerState = {
       azimuth: 0,
       polar: 0,
     },
-    distance: 5
+    distance: 0.2
   },
   model: {
     rotation: {

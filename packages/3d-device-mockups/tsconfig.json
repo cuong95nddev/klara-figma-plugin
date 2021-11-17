@@ -4,7 +4,8 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "jsxFactory": "",
-    "typeRoots": ["node_modules/@figma", "node_modules/@types"]
+    "typeRoots": ["node_modules/@figma", "node_modules/@types"],
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

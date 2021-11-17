@@ -40,17 +40,13 @@ import { yellow } from "kleur/colors";
 import { buildBundlesAsync } from "../utilities/build-bundles-async/build-bundles-async.js";
 import { buildManifestAsync } from "../utilities/build-manifest-async.js";
 import { trackElapsedTime } from "../utilities/track-elapsed-time.js";
-import { typeCheckWatch } from "../utilities/type-check/type-check-watch.js";
 import { watchIgnoreRegex } from "./watch-ignore-regex.js";
 var packageJsonRegex = /^package\.json$/;
 export function watchAsync(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var prod, typecheck, endTypeCheckWatch, watcher;
+        var prod, endTypeCheckWatch, watcher;
         return __generator(this, function (_a) {
-            prod = options.prod, typecheck = options.typecheck;
-            if (typecheck === true) {
-                endTypeCheckWatch = typeCheckWatch();
-            }
+            prod = options.prod;
             watcher = watch([
                 "**/*.{css,js,json,jsx,ts,tsx}",
                 constants.build.mainConfigFilePath,
@@ -63,11 +59,9 @@ export function watchAsync(options) {
                     return watchIgnoreRegex.test(path) === true;
                 }
             });
-            if (typecheck === false) {
-                watcher.on("ready", function () {
-                    log.info("Watching...");
-                });
-            }
+            watcher.on("ready", function () {
+                log.info("Watching...");
+            });
             watcher.on("change", function (file) {
                 return __awaiter(this, void 0, void 0, function () {
                     var getElapsedTime, promises, error_1;
@@ -75,9 +69,6 @@ export function watchAsync(options) {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
-                                if (typecheck === true && file.indexOf("tsconfig.json") !== -1) {
-                                    endTypeCheckWatch();
-                                }
                                 log.clearViewport();
                                 getElapsedTime = trackElapsedTime();
                                 log.info("Changed " + yellow(file));
@@ -85,19 +76,12 @@ export function watchAsync(options) {
                                 if (packageJsonRegex.test(file) === true) {
                                     promises.push(buildManifestAsync(prod));
                                 }
-                                promises.push(buildBundlesAsync(prod));
+                                promises.push(buildBundlesAsync(false, false, false));
                                 return [4 /*yield*/, Promise.all(promises)];
                             case 1:
                                 _a.sent();
                                 log.success("Built in " + getElapsedTime());
-                                if (typecheck === false) {
-                                    log.info("Watching...");
-                                    return [2 /*return*/];
-                                }
-                                if (file.indexOf("tsconfig.json") !== -1) {
-                                    // Restart the type-check watcher program
-                                    endTypeCheckWatch = typeCheckWatch();
-                                }
+                                log.info("Watching...");
                                 return [3 /*break*/, 3];
                             case 2:
                                 error_1 = _a.sent();

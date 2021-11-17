@@ -4,13 +4,15 @@ import Action from "../../features/Action";
 import ModelViewer from "../../features/ModelViewer";
 import ViewerSetting from "../../features/ViewerSetting";
 import stores from "../../stores";
+import style from './Viewer.module.scss'
+import style2 from './viewer2.module.css'
 
 const Viewer = () => {
 
   return (
     <Provider store={stores}>
       <div>
-        <div style={{ height: "400px", backgroundColor: "gray" }}>
+        <div className={style2.demo}>
           <ModelViewer />
         </div>
         <div>

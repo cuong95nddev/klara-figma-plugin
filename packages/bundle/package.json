@@ -19,8 +19,7 @@
     "build-figma-plugin": "lib/cli.js"
   },
   "scripts": {
-    "build": "yarn run clean && tsc --build",
-    "clean": "rm -rf '*.log' lib tsconfig.tsbuildinfo"
+    "build": "tsc --build"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",

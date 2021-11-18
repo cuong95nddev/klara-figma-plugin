@@ -1,4 +1,5 @@
 export default interface Device {
-  name?: string;
-  path?: string;
+  id: number;
+  name: string;
+  path: string;
 }

@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { viewerReducer } from "../features/Viewer";
+import { modelViewerReducer } from "../features/ModelViewer";
 
 const rootReducer = combineReducers({
-  viewerState: viewerReducer,
+  modelViewerState: modelViewerReducer,
 });
 
 const store = configureStore({

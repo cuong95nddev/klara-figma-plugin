@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import styled from "styled-components";
 import Action from "../../features/Action";
 import ModelViewer from "../../features/ModelViewer";
+import ViewerSetting from "../../features/ViewerSetting";
 import stores from "../../stores";
 
 const Viewer = () => {
@@ -14,6 +15,7 @@ const Viewer = () => {
           <ModelViewer />
         </Col>
         <Col span="8">
+          <ViewerSetting />
           <Action />
         </Col>
       </ViewerContainer>

@@ -1,6 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import CameraControls from "camera-controls";
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { MathUtils, PerspectiveCamera } from "three";
 import { CustomOrbitControls } from "./CameraControl";
 import CameraState from "./CameraState";
@@ -11,7 +11,7 @@ export declare interface CameraProps {
   onchange?: (cameraState: CameraState) => void;
 }
 
-const Camera = ({
+const Camera: FunctionComponent<CameraProps> = ({
   cameraState = {
     angle: {
       azimuth: 0,
@@ -73,7 +73,10 @@ const Camera = ({
 
     cameraControlRef.current.addEventListener("controlend", handleUpdateEvent);
     return () => {
-      cameraControlRef.current.removeEventListener("controlend", handleUpdateEvent);
+      cameraControlRef.current.removeEventListener(
+        "controlend",
+        handleUpdateEvent
+      );
     };
   }, []);
 

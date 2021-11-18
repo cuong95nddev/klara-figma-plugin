@@ -4,24 +4,26 @@ import { Canvas } from "@react-three/fiber";
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import Camera, { CameraState } from "../../components/Camera";
-import ModelRender from "../../components/ModelRender";
+import ModelRender, { ModelRenderState } from "../../components/ModelRender";
 import { SelectionChangedHandler } from "../../events";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { readAsDataURL } from "../../utilities/blobUtils";
-import { updateCameraState } from "../Viewer/ViewerSlide";
+import { updateCameraState } from "./ModelViewerSlide";
 
 const ModelViewer = () => {
   const [selection, setSelection] = useState<string>("");
 
-  const viewerState = useAppSelector((state) => state.viewerState);
+  const modelViewerState = useAppSelector((state) => state.modelViewerState);
+  const modelRenderState: ModelRenderState = useMemo<ModelRenderState>(
+    () => modelViewerState.modelRenderState,
+    [modelViewerState]
+  );
+  const cameraState: CameraState = useMemo<CameraState>(
+    () => modelViewerState.cameraState,
+    [modelViewerState]
+  );
+
   const dispatch = useAppDispatch();
-
-  const cameraState: CameraState = useMemo(() => {
-    return {
-      ...viewerState.camera,
-    };
-  }, [viewerState]);
-
   useEffect(() => {
     on<SelectionChangedHandler>(
       "SELECTION_CHANGED",
@@ -39,31 +41,20 @@ const ModelViewer = () => {
   return (
     <ModelViewerContainer>
       <Canvas>
-        <ambientLight color={16777215} intensity={2} />
+        <ambientLight color="0xffffff" intensity={2} />
         <directionalLight
-          color={16777215}
+          color="0xffffff"
           intensity={2}
           position={[0.5, 0, 0.866]}
         />
         <directionalLight
-          color={16777215}
+          color="0xffffff"
           intensity={1.5}
           position={[-6, 2, 2]}
         />
         <Suspense fallback={null}>
           <ModelRender
-            modelRenderState={{
-              rotation: {
-                x: 0,
-                y: 0,
-                z: 0,
-              },
-              position: {
-                x: 0,
-                y: 0,
-                z: 0,
-              },
-            }}
+            modelRenderState={{ ...modelRenderState }}
             selection={selection}
           />
         </Suspense>

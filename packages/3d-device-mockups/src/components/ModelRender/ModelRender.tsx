@@ -1,23 +1,25 @@
 import { useGLTF, useTexture } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import React, { useEffect, useMemo } from "react";
-import { Color, MathUtils, sRGBEncoding } from "three";
+import { MathUtils, sRGBEncoding } from "three";
 import { ModelRenderState } from ".";
-import defaultModel from "./DefaultModel";
+import { Vector3 } from "../../types/Vector";
 
 export declare interface ModelRenderProps {
-  modelRenderState: ModelRenderState;
   selection: string;
+  modelRenderState: ModelRenderState;
 }
 
 const ModelRender = ({ modelRenderState, selection }: ModelRenderProps) => {
-  const empty: string = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-  const devicePath: string = defaultModel[0].path || "";
-  const { scene } = useGLTF(devicePath);
+  const empty: string =
+    "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+
+  const path: string = modelRenderState.path;
+  const rotation: Vector3 = modelRenderState.rotation;
+
+  const { scene } = useGLTF(path);
   const { gl } = useThree();
   const texture = useTexture(selection || empty);
-
-  const rotation = useMemo(() => modelRenderState.rotation, [modelRenderState]);
 
   useEffect(() => {
     scene.rotation.set(

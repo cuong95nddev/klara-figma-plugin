@@ -1,5 +1,3 @@
-import React from "react";
-import * as THREE from "three";
 import {
   extend,
   ReactThreeFiber,
@@ -7,6 +5,8 @@ import {
   useThree,
 } from "@react-three/fiber";
 import CameraControls from "camera-controls";
+import React from "react";
+import * as THREE from "three";
 
 CameraControls.install({ THREE: THREE });
 
@@ -31,6 +31,7 @@ export const CustomOrbitControls: React.FC<any> = React.forwardRef(
         ref.current.update(delta);
       }
     });
+
     return <cameraControls ref={ref} args={[camera, gl.domElement]} />;
   }
 );

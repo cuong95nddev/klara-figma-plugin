@@ -71,9 +71,9 @@ const Camera = ({
     camera.aspect = gl.domElement.clientWidth / gl.domElement.clientHeight;
     camera.updateProjectionMatrix();
 
-    cameraControlRef.current.addEventListener("control", handleUpdateEvent);
+    cameraControlRef.current.addEventListener("controlend", handleUpdateEvent);
     return () => {
-      cameraControlRef.current.removeEventListener("control", handleUpdateEvent);
+      cameraControlRef.current.removeEventListener("controlend", handleUpdateEvent);
     };
   }, []);
 

@@ -65,7 +65,7 @@ async function buildMainBundleAsync(options: {
       name: "main",
     },
     entry: {
-      app: ["@babel/polyfill", "./main.js"],
+      app: ["./main.js"],
     },
     output: {
       path: join(process.cwd(), constants.build.buildDirectoryName),
@@ -81,8 +81,6 @@ async function buildMainBundleAsync(options: {
               transpileOnly: true,
             },
           },
-          include: path.resolve(process.cwd(), "src"),
-          exclude: /node_modules/,
         },
         {
           test: /\.m?js/,
@@ -115,12 +113,14 @@ async function buildMainBundleAsync(options: {
         throw err;
       }
 
-      // console.log(
-      //   stats?.toString({
-      //     chunks: false,
-      //     colors: true,
-      //   })
-      // );
+      if (stats?.hasErrors()) {
+        console.log(
+          stats?.toString({
+            chunks: false,
+            colors: true,
+          })
+        );
+      }
 
       compiler.close((closeErr) => {
         resolve(null);
@@ -277,12 +277,14 @@ async function buildUiBundleAsync(options: {
         throw err;
       }
 
-      // console.log(
-      //   stats?.toString({
-      //     chunks: false,
-      //     colors: true,
-      //   })
-      // );
+      if (stats?.hasErrors()) {
+        console.log(
+          stats?.toString({
+            chunks: false,
+            colors: true,
+          })
+        );
+      }
 
       compiler.close((closeErr) => {
         resolve(null);

@@ -1,7 +1,8 @@
 import { on } from "@create-figma-plugin/utilities";
 import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { Fragment, Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
+import styled from "styled-components";
 import Camera, { CameraState } from "../../components/Camera";
 import ModelRender from "../../components/ModelRender";
 import { SelectionChangedHandler } from "../../events";
@@ -36,7 +37,7 @@ const ModelViewer = () => {
   };
 
   return (
-    <Fragment>
+    <ModelViewerContainer>
       <Canvas>
         <ambientLight color={16777215} intensity={2} />
         <directionalLight
@@ -69,8 +70,20 @@ const ModelViewer = () => {
         <Camera cameraState={cameraState} onchange={handleCameraChange} />
       </Canvas>
       <Loader />
-    </Fragment>
+    </ModelViewerContainer>
   );
 };
+
+const ModelViewerContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  background: #eee
+    url('data:image/svg+xml,\
+    <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill-opacity=".15">\
+      <rect x="200" width="200" height="200" />\
+      <rect y="200" width="200" height="200" />\
+    </svg>');
+  background-size: 20px 20px;
+`;
 
 export default ModelViewer;

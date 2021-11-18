@@ -33,35 +33,7 @@ const ViewerSetting = () => {
 
   return (
     <div>
-      <div>
-        <div>Device rotation</div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            columnGap: "6px",
-          }}
-        >
-          <InputNumber {...modelRotationY} />
-          <InputNumber {...modelRotationY} />
-          <InputNumber {...modelRotationZ} />
-        </div>
-      </div>
-
-      <div>
-        <div>Camera rotation</div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            columnGap: "6px",
-          }}
-        >
-          <InputNumber {...cameraAzimuthAngle} />
-          <InputNumber {...cameraPolarAngle} />
-          <InputNumber {...cameraDistance} />
-        </div>
-      </div>
+      
     </div>
   );
 };

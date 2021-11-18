@@ -6,7 +6,7 @@ import ViewerState from "./ViewerState";
 const initialState: ViewerState = {
   camera: {
     angle: {
-      azimuth: 0,
+      azimuth: 2,
       polar: 0,
     },
     distance: 0.2

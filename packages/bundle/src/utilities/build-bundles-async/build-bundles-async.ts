@@ -7,7 +7,6 @@ import {
   constants,
   readConfigAsync,
 } from "@create-figma-plugin/common";
-import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import indentString from "indent-string";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import path, { join } from "path";
@@ -54,7 +53,6 @@ async function buildMainBundleAsync(options: {
 
   let plugins: any[] = [];
   plugins.push(virtualModules);
-  plugins.push(new ForkTsCheckerWebpackPlugin());
   if (bundleAnalyzer) {
     plugins.push(new BundleAnalyzerPlugin());
   }
@@ -62,6 +60,10 @@ async function buildMainBundleAsync(options: {
   const webpackOptions: Configuration = {
     mode: prod ? "production" : "development",
     devtool: prod ? false : "inline-source-map",
+    cache: {
+      type: "filesystem",
+      name: "main",
+    },
     entry: {
       app: ["@babel/polyfill", "./main.js"],
     },
@@ -71,18 +73,6 @@ async function buildMainBundleAsync(options: {
     },
     module: {
       rules: [
-        {
-          test: /\.js?$/,
-          include: path.resolve(process.cwd(), "src"),
-          exclude: /(node_modules)/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: ["@babel/preset-env"],
-              cacheDirectory: true,
-            },
-          },
-        },
         {
           test: /\.tsx?$/,
           use: {
@@ -171,14 +161,13 @@ async function buildUiBundleAsync(options: {
   if (js === null) {
     return;
   }
-  
+
   const virtualModules = new VirtualModulesPlugin({ "./ui.js": js });
   const plugins: any[] = [];
   plugins.push(virtualModules);
   if (prod) {
     plugins.push(new MiniCssExtractPlugin());
   }
-  plugins.push(new ForkTsCheckerWebpackPlugin());
   if (bundleAnalyzer) {
     plugins.push(new BundleAnalyzerPlugin());
   }
@@ -186,6 +175,10 @@ async function buildUiBundleAsync(options: {
   const webpackOptions: webpack.Configuration = {
     mode: prod ? "production" : "development",
     devtool: prod ? false : "inline-source-map",
+    cache: {
+      type: "filesystem",
+      name: "ui",
+    },
     entry: {
       app: ["./ui.js"],
     },

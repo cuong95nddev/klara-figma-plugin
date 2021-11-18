@@ -2,5 +2,6 @@
 .vscode
 *.css.d.ts
 build/
+lib/
 node_modules/
 manifest.json

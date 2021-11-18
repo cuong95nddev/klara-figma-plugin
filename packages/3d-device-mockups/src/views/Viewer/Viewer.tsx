@@ -1,29 +1,29 @@
+import { Col, Row } from "antd";
 import React from "react";
 import { Provider } from "react-redux";
+import styled from "styled-components";
 import Action from "../../features/Action";
 import ModelViewer from "../../features/ModelViewer";
-import ViewerSetting from "../../features/ViewerSetting";
 import stores from "../../stores";
-import style from './Viewer.module.scss'
-import style2 from './viewer2.module.css'
 
 const Viewer = () => {
-
   return (
     <Provider store={stores}>
-      <div>
-        <div className={style2.demo}>
+      <ViewerContainer>
+        <Col span="16">
           <ModelViewer />
-        </div>
-        <div>
-          <ViewerSetting />
-        </div>
-        <div>
+        </Col>
+        <Col span="8">
           <Action />
-        </div>
-      </div>
+        </Col>
+      </ViewerContainer>
     </Provider>
   );
 };
+
+const ViewerContainer = styled(Row)`
+  width: 100%;
+  height: 100%;
+`;
 
 export default Viewer;

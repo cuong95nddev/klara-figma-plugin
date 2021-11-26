@@ -8,6 +8,7 @@ import { SelectionChangedHandler } from "./events";
 export default function () {
   figma.on("selectionchange", async function () {
     const selectedNodes: SceneNode[] = getSelectedNodesOrAllNodes();
+    
     if (!selectedNodes.length) {
       return;
     }

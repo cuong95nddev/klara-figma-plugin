@@ -24,6 +24,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "@create-figma-plugin/common": "^1.7.2",
+    "antd": "^4.17.1",
     "chokidar": "^3.5.2",
     "find-up": "^6.2.0",
     "fs-extra": "^10.0.0",

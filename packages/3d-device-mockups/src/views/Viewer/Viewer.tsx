@@ -14,10 +14,14 @@ const Viewer = () => {
         <Col span="16">
           <ModelViewer />
         </Col>
-        <Col span="8">
-          <ViewerSetting />
-          <Action />
-        </Col>
+        <LeftContainer span="8">
+          <SettingSection>
+            <ViewerSetting />
+          </SettingSection>
+          <ActionSection>
+            <Action />
+          </ActionSection>
+        </LeftContainer>
       </ViewerContainer>
     </Provider>
   );
@@ -27,5 +31,18 @@ const ViewerContainer = styled(Row)`
   width: 100%;
   height: 100%;
 `;
+
+const LeftContainer = styled(Col)`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const SettingSection = styled.div`
+  flex: 1;
+  overflow: auto;
+`;
+
+const ActionSection = styled.div``;
 
 export default Viewer;

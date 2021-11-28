@@ -4,11 +4,13 @@ import { Canvas } from "@react-three/fiber";
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import Camera, { CameraState } from "../../components/Camera";
+import { MaterialItemState } from "../../components/MaterialItem";
 import ModelRender, { ModelRenderState } from "../../components/ModelRender";
 import { SelectionChangedHandler } from "../../events";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { readAsDataURL } from "../../utilities/blobUtils";
-import { updateCameraState } from "./ModelViewerSlide";
+import { updateMaterialStates } from "../MaterialSetting/MaterialSettingSlide";
+import { updateCameraState, updateSelectedFrame } from "./ModelViewerSlide";
 
 const ModelViewer = () => {
   const [selection, setSelection] = useState<string>("");
@@ -23,19 +25,30 @@ const ModelViewer = () => {
     [modelViewerState]
   );
 
+  const selectedFrame = modelViewerState.selectedFrame || "";
+
   const dispatch = useAppDispatch();
   useEffect(() => {
     on<SelectionChangedHandler>(
       "SELECTION_CHANGED",
       async (node: Uint8Array) => {
         const result: string = (await readAsDataURL(node)) as string;
-        setSelection(result);
+        dispatch(updateSelectedFrame(result));
       }
     );
   }, []);
 
+  const selectedMaterialUUID =
+    useAppSelector(
+      (state) => state.materialSettingState.selectedMaterialUUID
+    ) || "";
+
   const handleCameraChange = (cameraState: CameraState) => {
     dispatch(updateCameraState(cameraState));
+  };
+
+  const handleMaterialsChanged = (materialItems: MaterialItemState[]): void => {
+    dispatch(updateMaterialStates(materialItems));
   };
 
   return (
@@ -55,7 +68,9 @@ const ModelViewer = () => {
         <Suspense fallback={null}>
           <ModelRender
             modelRenderState={{ ...modelRenderState }}
-            selection={selection}
+            selectedFrame={selectedFrame}
+            materialsChanged={handleMaterialsChanged}
+            selectedMaterialUUID={selectedMaterialUUID}
           />
         </Suspense>
         <Camera cameraState={cameraState} onchange={handleCameraChange} />

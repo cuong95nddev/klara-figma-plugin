@@ -45,10 +45,14 @@ export const slice = createSlice({
     updateCameraState: (state, action: PayloadAction<CameraState>) => {
       state.cameraState = action.payload;
     },
+    updateSelectedFrame: (state, action: PayloadAction<string>) => {
+      state.selectedFrame = action.payload;
+    },
   },
 });
 
-export const { updateModelPath, updateCameraState } = slice.actions;
+export const { updateModelPath, updateCameraState, updateSelectedFrame } =
+  slice.actions;
 
 export const selectViewer = (state: RootState) => state.modelViewerState;
 

@@ -41,6 +41,7 @@ export const slice = createSlice({
   reducers: {
     updateModelPath: (state, action: PayloadAction<string>) => {
       state.modelRenderState.path = action.payload;
+      state.cameraState = { ...initialState.cameraState };
     },
     updateCameraState: (state, action: PayloadAction<CameraState>) => {
       state.cameraState = action.payload;

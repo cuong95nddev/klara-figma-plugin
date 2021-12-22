@@ -1,58 +1,102 @@
-import { useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import React, { useEffect } from "react";
-import { MathUtils, sRGBEncoding } from "three";
+import React, {
+  forwardRef,
+  Ref,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  Color,
+  LinearFilter,
+  sRGBEncoding,
+  Texture,
+  TextureLoader,
+} from "three";
 import { ModelRenderState } from ".";
 import { Vector3 } from "../../types/Vector";
 import { MaterialItemState } from "../MaterialItem";
 
+export declare interface ModelRenderRef {
+  setMaterialTexture: (materialUUID: string, url: string) => void;
+  getScene: () => any;
+}
 export declare interface ModelRenderProps {
-  selectedFrame: string;
-  selectedMaterialUUID: string;
   modelRenderState: ModelRenderState;
   materialsChanged?: (materialItems: MaterialItemState[]) => void;
 }
 
-const ModelRender = ({
-  modelRenderState,
-  selectedFrame,
-  selectedMaterialUUID,
-  materialsChanged,
-}: ModelRenderProps) => {
-  const empty: string =
-    "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
-
+const ModelRenderInner = (
+  { modelRenderState, materialsChanged }: ModelRenderProps,
+  ref: Ref<ModelRenderRef>
+) => {
   const path: string = modelRenderState.path;
   const rotation: Vector3 = modelRenderState.rotation;
 
   const { scene, nodes, materials } = useGLTF(path) as any;
+
+  const sceneClone = useMemo(() => scene.clone(), [scene]);
+
   const { gl } = useThree();
-  const texture = useTexture(selectedFrame || empty);
 
-  useEffect(() => {
-    scene.rotation.set(
-      MathUtils.degToRad(rotation.x),
-      MathUtils.degToRad(rotation.y),
-      MathUtils.degToRad(rotation.z)
-    );
-  }, [rotation]);
+  const [textureUrl, setTextureUrl] = useState<string>();
+  const [selectedMaterialUUID, setSelectedMaterialUUID] = useState<string>();
 
-  useEffect(() => {
+  const textureLoader = useRef<TextureLoader>();
+
+  const loadTexture = async (url: string): Promise<Texture> => {
+    textureLoader.current = new TextureLoader();
+    return await textureLoader.current.loadAsync(url);
+  };
+
+  const applyScreenTexture = async (textureUrl: string, material: any) => {
+    let texture: Texture = await loadTexture(textureUrl);
+
     texture.encoding = sRGBEncoding;
-    texture.flipY = true;
+    texture.minFilter = LinearFilter;
+    texture.magFilter = LinearFilter;
+    texture.flipY = false;
     texture.anisotropy = gl.capabilities.getMaxAnisotropy();
+    texture.generateMipmaps = false;
 
-    gl.initTexture(texture);
+    await gl.initTexture(texture);
 
-    console.log(materials);
+    material.color = new Color(0xffffff);
+    material.transparent = false;
+    material.map = texture;
+    material.needsUpdate = true;
+  };
 
-    // scene.traverse((object3D: any) => {
-    //   if (object3D.name === "Screen") {
-    //     object3D.material.map = texture;
-    //     object3D.material.needsUpdate = true;
-    //   }
-    // });
-  }, [texture, gl, scene]);
+  const getSelectedMaterial = (): any =>
+    Object.values(materials).find(
+      (material: any) => material.uuid === selectedMaterialUUID
+    );
+
+  useEffect(() => {
+    if (!textureUrl) {
+      return;
+    }
+
+    let selectedMaterial = getSelectedMaterial();
+    if (!selectedMaterial) {
+      return;
+    }
+
+    applyScreenTexture(textureUrl, selectedMaterial);
+  }, [textureUrl, selectedMaterialUUID]);
+
+  useImperativeHandle(ref, () => ({
+    setMaterialTexture(materialUUID: string, url: string) {
+      setSelectedMaterialUUID(materialUUID);
+      setTextureUrl(url);
+    },
+    getScene() {
+      return scene;
+    },
+  }));
 
   useEffect(() => {
     extractMaterial();
@@ -77,19 +121,9 @@ const ModelRender = ({
     materialsChanged?.(materialItems);
   };
 
-  useEffect(() => {
-    let selectedMaterial: any = Object.values(materials).find(
-      (material: any) => material.uuid === selectedMaterialUUID
-    );
-    if (!selectedMaterial) {
-      return;
-    }
-
-    selectedMaterial.map = texture;
-    selectedMaterial.needsUpdate = true;
-  }, [selectedMaterialUUID]);
-
-  return <primitive object={scene} />;
+  return <primitive object={sceneClone} />;
 };
+
+const ModelRender = forwardRef(ModelRenderInner);
 
 export default ModelRender;

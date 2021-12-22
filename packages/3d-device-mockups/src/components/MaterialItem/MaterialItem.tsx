@@ -19,7 +19,7 @@ const MaterialItem: FunctionComponent<MaterialItemProps> = ({
 
   return (
     <MaterialItemContainer>
-      <div>
+      {/* <div>
         <ColorPicker color={materialItemState.color} />
       </div>
       <div>
@@ -33,7 +33,7 @@ const MaterialItem: FunctionComponent<MaterialItemProps> = ({
       <div>
         <p>opacity</p>
         <Slider min={0} max={1} step={0.1} value={materialItemState.opacity} />
-      </div>
+      </div> */}
       <div>
         <Button block onClick={handleLoadFrame}>
           Load frame

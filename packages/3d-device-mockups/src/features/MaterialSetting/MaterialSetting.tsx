@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import styled from "styled-components";
 import MaterialItem, { MaterialItemState } from "../../components/MaterialItem";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { updateSelectedMaterialUUID } from "./MaterialSettingSlide";
+import { loadTextureForMaterial } from "./MaterialSettingSlide";
 
 const { Panel } = Collapse;
 
@@ -17,7 +17,7 @@ const MaterialSetting: FunctionComponent<MaterialSettingProps> = () => {
   );
 
   const handleLoadFrameClick = (selectedItem: MaterialItemState) => {
-    dispatch(updateSelectedMaterialUUID(selectedItem.uuid));
+    dispatch(loadTextureForMaterial(selectedItem.uuid));
   };
 
   return (

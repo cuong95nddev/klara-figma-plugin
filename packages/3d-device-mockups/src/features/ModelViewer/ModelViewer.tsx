@@ -1,33 +1,37 @@
 import { on } from "@create-figma-plugin/utilities";
-import { Loader } from "@react-three/drei";
+import { Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Camera, { CameraState } from "../../components/Camera";
+import { CameraRef } from "../../components/Camera/Camera";
 import { MaterialItemState } from "../../components/MaterialItem";
 import ModelRender, { ModelRenderState } from "../../components/ModelRender";
+import { ModelRenderRef } from "../../components/ModelRender/ModelRender";
 import { SelectionChangedHandler } from "../../events";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { readAsDataURL } from "../../utilities/blobUtils";
-import { updateMaterialStates } from "../MaterialSetting/MaterialSettingSlide";
+import { MaterialSettingState } from "../MaterialSetting";
+import {
+  loadTextureForMaterialDone,
+  updateMaterialStates,
+} from "../MaterialSetting/MaterialSettingSlide";
 import { updateCameraState, updateSelectedFrame } from "./ModelViewerSlide";
+import ModelViewerState from "./ModelViewerState";
 
 const ModelViewer = () => {
-  const [selection, setSelection] = useState<string>("");
-
-  const modelViewerState = useAppSelector((state) => state.modelViewerState);
-  const modelRenderState: ModelRenderState = useMemo<ModelRenderState>(
-    () => modelViewerState.modelRenderState,
-    [modelViewerState]
-  );
-  const cameraState: CameraState = useMemo<CameraState>(
-    () => modelViewerState.cameraState,
-    [modelViewerState]
-  );
-
-  const selectedFrame = modelViewerState.selectedFrame || "";
-
   const dispatch = useAppDispatch();
+
+  const modelRenderRef = useRef<ModelRenderRef>(null);
+
+  const modelViewerState: ModelViewerState = useAppSelector(
+    (state) => state.modelViewerState
+  );
+
+  const modelRenderState: ModelRenderState = modelViewerState.modelRenderState;
+  const cameraState: CameraState = modelViewerState.cameraState;
+  const selectedFrame: string = modelViewerState.selectedFrame || "";
+
   useEffect(() => {
     on<SelectionChangedHandler>(
       "SELECTION_CHANGED",
@@ -38,18 +42,43 @@ const ModelViewer = () => {
     );
   }, []);
 
-  const selectedMaterialUUID =
-    useAppSelector(
-      (state) => state.materialSettingState.selectedMaterialUUID
-    ) || "";
+  const materialSettingState: MaterialSettingState = useAppSelector(
+    (state) => state.materialSettingState
+  );
+
+  const loadTextureMaterialUUID = materialSettingState.loadTextureMaterialUUID;
+
+  useEffect(() => {
+    if (!loadTextureMaterialUUID) {
+      return;
+    }
+
+    modelRenderRef.current?.setMaterialTexture(
+      loadTextureMaterialUUID,
+      selectedFrame
+    );
+
+    dispatch(loadTextureForMaterialDone());
+  }, [loadTextureMaterialUUID]);
 
   const handleCameraChange = (cameraState: CameraState) => {
+    console.log(cameraState);
     dispatch(updateCameraState(cameraState));
   };
 
   const handleMaterialsChanged = (materialItems: MaterialItemState[]): void => {
     dispatch(updateMaterialStates(materialItems));
   };
+
+  const cameraRef = useRef<CameraRef>(null);
+
+  const resetCamera = (): void => {
+    cameraRef.current?.reset(modelRenderRef.current?.getScene());
+  };
+
+  useEffect(() => {
+    resetCamera();
+  }, [modelRenderState.path]);
 
   return (
     <ModelViewerContainer>
@@ -68,12 +97,16 @@ const ModelViewer = () => {
         <Suspense fallback={null}>
           <ModelRender
             modelRenderState={{ ...modelRenderState }}
-            selectedFrame={selectedFrame}
             materialsChanged={handleMaterialsChanged}
-            selectedMaterialUUID={selectedMaterialUUID}
+            ref={modelRenderRef}
           />
+          <Environment preset="city" />
         </Suspense>
-        <Camera cameraState={cameraState} onchange={handleCameraChange} />
+        <Camera
+          ref={cameraRef}
+          cameraState={cameraState}
+          onchange={handleCameraChange}
+        />
       </Canvas>
       <Loader />
     </ModelViewerContainer>

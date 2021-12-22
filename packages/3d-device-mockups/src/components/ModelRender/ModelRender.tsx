@@ -27,10 +27,11 @@ export declare interface ModelRenderRef {
 export declare interface ModelRenderProps {
   modelRenderState: ModelRenderState;
   materialsChanged?: (materialItems: MaterialItemState[]) => void;
+  onLoaded?: () => void;
 }
 
 const ModelRenderInner = (
-  { modelRenderState, materialsChanged }: ModelRenderProps,
+  { modelRenderState, materialsChanged, onLoaded }: ModelRenderProps,
   ref: Ref<ModelRenderRef>
 ) => {
   const path: string = modelRenderState.path;
@@ -39,6 +40,18 @@ const ModelRenderInner = (
   const { scene, nodes, materials } = useGLTF(path) as any;
 
   const sceneClone = useMemo(() => scene.clone(), [scene]);
+
+  useEffect(() => {
+    if (!sceneClone) {
+      return;
+    }
+
+    if (!onLoaded) {
+      return;
+    }
+
+    onLoaded();
+  }, [sceneClone]);
 
   const { gl } = useThree();
 

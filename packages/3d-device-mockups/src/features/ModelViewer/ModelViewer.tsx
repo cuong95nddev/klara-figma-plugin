@@ -76,9 +76,9 @@ const ModelViewer = () => {
     cameraRef.current?.reset(modelRenderRef.current?.getScene());
   };
 
-  useEffect(() => {
+  const handleModelLoaded = (): void => {
     resetCamera();
-  }, [modelRenderState.path]);
+  };
 
   return (
     <ModelViewerContainer>
@@ -98,6 +98,7 @@ const ModelViewer = () => {
           <ModelRender
             modelRenderState={{ ...modelRenderState }}
             materialsChanged={handleMaterialsChanged}
+            onLoaded={handleModelLoaded}
             ref={modelRenderRef}
           />
           <Environment preset="city" />

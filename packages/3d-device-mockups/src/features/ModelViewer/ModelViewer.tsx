@@ -73,7 +73,6 @@ const ModelViewer = () => {
   }, [loadTextureMaterialUUID]);
 
   const handleCameraChange = (cameraState: CameraState) => {
-    console.log(cameraState);
     dispatch(updateCameraState(cameraState));
   };
 
@@ -133,12 +132,6 @@ const ModelViewer = () => {
     <ModelViewerContainer>
       <Button onClick={exportImage}>Export</Button>
       <Canvas ref={canvasRef}>
-        <ambientLight color="0xffffff" intensity={2} />
-        <directionalLight
-          color="0xffffff"
-          intensity={1.5}
-          position={[-6, 2, 2]}
-        />
         <Suspense fallback={null}>
           <ModelRender
             modelRenderState={{ ...modelRenderState }}

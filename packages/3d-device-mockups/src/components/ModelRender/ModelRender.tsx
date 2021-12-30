@@ -10,9 +10,11 @@ import React, {
   useState,
 } from "react";
 import {
+  AmbientLight,
   Color,
+  DirectionalLight,
+  Light,
   LinearFilter,
-  Object3D,
   sRGBEncoding,
   Texture,
   TextureLoader,
@@ -20,6 +22,12 @@ import {
 } from "three";
 import { ModelRenderState } from ".";
 import { Vector3 } from "../../types/Vector";
+import {
+  cleanMaterial,
+  cleanRenderer,
+  cleanScene,
+  removeLights,
+} from "../../utilities/threeUtils";
 import { MaterialItemState } from "../MaterialItem";
 
 export declare interface ModelRenderRef {
@@ -39,21 +47,47 @@ const ModelRenderInner = (
 ) => {
   const path: string = modelRenderState.path;
   const rotation: Vector3 = modelRenderState.rotation;
-  const { scene, nodes, materials } = useGLTF(path) as any;
-
-  const sceneClone = useMemo(() => scene.clone(), [scene]);
+  const { scene, nodes, materials } = useGLTF(path, true) as any;
+  const lights = useRef<Light[]>([]);
+  const [updateScene, setUpdateScene] = useState<number>(0);
 
   useEffect(() => {
-    if (!sceneClone) {
+    return () => {
+      cleanMaterial(materials);
+      removeLights(lights.current);
+      cleanScene(scene);
+      cleanRenderer(gl);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!scene) {
       return;
     }
 
-    if (!onLoaded) {
-      return;
+    lights.current = [];
+
+    const ambientLight = new AmbientLight(0xffffff, 2);
+    lights.current.push(ambientLight);
+
+    const directionalLight = new DirectionalLight(0xffffff, 1.5);
+    directionalLight.position.set(-6, 2, 2);
+    lights.current.push(directionalLight);
+
+    for (const light of lights.current) {
+      scene.add(light);
     }
 
-    onLoaded();
-  }, [sceneClone]);
+    setUpdateScene(Date.now());
+
+    if (onLoaded) {
+      onLoaded();
+    }
+  }, [scene]);
+
+  const sceneCloned = useMemo(() => {
+    return scene.clone();
+  }, [scene, updateScene]);
 
   const { gl } = useThree();
 
@@ -100,8 +134,6 @@ const ModelRenderInner = (
       return;
     }
 
-    console.log(selectedMaterial);
-
     applyScreenTexture(textureUrl, selectedMaterial);
   }, [textureUrl, selectedMaterialUUID]);
 
@@ -141,7 +173,7 @@ const ModelRenderInner = (
     materialsChanged?.(materialItems);
   };
 
-  return <primitive object={sceneClone} />;
+  return <primitive object={sceneCloned} />;
 };
 
 const ModelRender = forwardRef(ModelRenderInner);

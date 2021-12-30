@@ -34,9 +34,6 @@ export function createImageNode(
   rectangle.x = x / resolution + xOffset;
   rectangle.y = y / resolution + yOffset;
   rectangle.resize(width / resolution, height / resolution);
-
-  console.log(bytes);
-
   rectangle.fills = [createImagePaint(bytes)];
   return rectangle;
 }

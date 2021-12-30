@@ -14,7 +14,6 @@ import {
   MathUtils,
   Object3D,
   PerspectiveCamera,
-  Sphere,
   Vector2,
   Vector3,
 } from "three";
@@ -24,6 +23,7 @@ import useCameraKeyboard from "./useCameraKeyboard";
 
 export declare interface CameraRef {
   reset: (box3OrObject: Object3D<Event> | Box3) => void;
+  getCamera: () => any;
 }
 
 export declare interface CameraProps {
@@ -108,6 +108,9 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
     reset(box3OrObject: Object3D<Event> | Box3) {
       cameraControlRef.current.reset();
       paddingInCssPixel(box3OrObject, 30, 30, 30, 30);
+    },
+    getCamera() {
+      return cameraControlRef.current.camera;
     },
   }));
 

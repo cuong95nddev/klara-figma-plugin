@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ActionState, ExportImageState } from ".";
+import { ActionState } from ".";
 import type { RootState } from "../../stores";
+import { ExportImageState } from "./ExportImageState";
 
 const defaultExportImageState = ExportImageState.FINISHED;
 

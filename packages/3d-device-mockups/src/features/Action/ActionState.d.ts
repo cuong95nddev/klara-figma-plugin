@@ -1,8 +1,4 @@
-export enum ExportImageState {
-  START,
-  EXPORTING,
-  FINISHED,
-}
+import { ExportImageState } from "./ExportImageState";
 
 export default interface ActionState {
   exportImage: ExportImageState;

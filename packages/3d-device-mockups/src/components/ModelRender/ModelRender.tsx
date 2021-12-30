@@ -12,9 +12,11 @@ import React, {
 import {
   Color,
   LinearFilter,
+  Object3D,
   sRGBEncoding,
   Texture,
   TextureLoader,
+  WebGLRenderer,
 } from "three";
 import { ModelRenderState } from ".";
 import { Vector3 } from "../../types/Vector";
@@ -23,6 +25,7 @@ import { MaterialItemState } from "../MaterialItem";
 export declare interface ModelRenderRef {
   setMaterialTexture: (materialUUID: string, url: string) => void;
   getScene: () => any;
+  getRenderer: () => WebGLRenderer;
 }
 export declare interface ModelRenderProps {
   modelRenderState: ModelRenderState;
@@ -36,7 +39,6 @@ const ModelRenderInner = (
 ) => {
   const path: string = modelRenderState.path;
   const rotation: Vector3 = modelRenderState.rotation;
-
   const { scene, nodes, materials } = useGLTF(path) as any;
 
   const sceneClone = useMemo(() => scene.clone(), [scene]);
@@ -110,7 +112,10 @@ const ModelRenderInner = (
     },
     getScene() {
       return scene;
-    }
+    },
+    getRenderer() {
+      return gl;
+    },
   }));
 
   useEffect(() => {

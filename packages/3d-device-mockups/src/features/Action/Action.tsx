@@ -1,8 +1,8 @@
 import { Button } from "antd";
 import React, { FunctionComponent } from "react";
-import { ExportImageState } from ".";
 import { useAppDispatch } from "../../hooks";
 import { updateExportImageState } from "./ActionSlide";
+import { ExportImageState } from "./ExportImageState";
 
 interface ActionProps {}
 
@@ -15,7 +15,7 @@ const Action: FunctionComponent<ActionProps> = () => {
 
   return (
     <div>
-      <Button block type="primary">
+      <Button block type="primary" onClick={handleExportImage}>
         Export image
       </Button>
     </div>

@@ -1,19 +1,26 @@
-import { on } from "@create-figma-plugin/utilities";
+import { emit, on } from "@create-figma-plugin/utilities";
 import { Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Button } from "antd";
 import React, { Suspense, useEffect, useRef } from "react";
 import styled from "styled-components";
+import { Object3D, WebGLRenderer } from "three";
 import Camera, { CameraState } from "../../components/Camera";
 import { CameraRef } from "../../components/Camera/Camera";
 import { MaterialItemState } from "../../components/MaterialItem";
 import ModelRender, { ModelRenderState } from "../../components/ModelRender";
 import { ModelRenderRef } from "../../components/ModelRender/ModelRender";
 import { SelectionChangedHandler } from "../../events";
+import { ExportImageHandler } from "../../events/ExportImageHandler";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { readAsDataURL } from "../../utilities/blobUtils";
-import { ActionState, ExportImageState } from "../Action";
+import {
+  getImage,
+  getImageBlob,
+  readAsDataURL,
+} from "../../utilities/imageUtils";
+import { ActionState } from "../Action";
 import { updateExportImageState } from "../Action/ActionSlide";
+import { ExportImageState } from "../Action/ExportImageState";
 import { MaterialSettingState } from "../MaterialSetting";
 import {
   loadTextureForMaterialDone,
@@ -84,8 +91,28 @@ const ModelViewer = () => {
     resetCamera();
   };
 
-  const exportImage = (): any => {
-    console.log(canvasRef.current.toDataURL("image/png", 1));
+  const exportImage = async (): Promise<any> => {
+    if (!modelRenderRef.current) {
+      return;
+    }
+
+    const renderer: WebGLRenderer = modelRenderRef.current?.getRenderer();
+    const scene: Object3D<Event> = modelRenderRef.current?.getScene();
+    const camera: THREE.Camera = cameraRef.current?.getCamera();
+    renderer.setPixelRatio(2);
+    renderer.render(scene, camera);
+
+    const image: string = renderer.domElement.toDataURL("image/png", 1);
+    let imageElement: HTMLImageElement = await getImage(image);
+    const blob = getImageBlob(image);
+
+    emit<ExportImageHandler>("EXPORT_IMAGE", {
+      width: imageElement.width,
+      height: imageElement.height,
+      bytes: blob,
+      x: 0,
+      y: 0,
+    });
   };
 
   const actionState: ActionState = useAppSelector((state) => state.actionState);

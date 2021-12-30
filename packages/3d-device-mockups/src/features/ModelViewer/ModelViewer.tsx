@@ -1,6 +1,7 @@
 import { on } from "@create-figma-plugin/utilities";
 import { Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Button } from "antd";
 import React, { Suspense, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Camera, { CameraState } from "../../components/Camera";
@@ -11,6 +12,8 @@ import { ModelRenderRef } from "../../components/ModelRender/ModelRender";
 import { SelectionChangedHandler } from "../../events";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { readAsDataURL } from "../../utilities/blobUtils";
+import { ActionState, ExportImageState } from "../Action";
+import { updateExportImageState } from "../Action/ActionSlide";
 import { MaterialSettingState } from "../MaterialSetting";
 import {
   loadTextureForMaterialDone,
@@ -20,6 +23,7 @@ import { updateCameraState, updateSelectedFrame } from "./ModelViewerSlide";
 import ModelViewerState from "./ModelViewerState";
 
 const ModelViewer = () => {
+  const canvasRef = useRef<any>(null);
   const dispatch = useAppDispatch();
 
   const modelRenderRef = useRef<ModelRenderRef>(null);
@@ -80,15 +84,29 @@ const ModelViewer = () => {
     resetCamera();
   };
 
+  const exportImage = (): any => {
+    console.log(canvasRef.current.toDataURL("image/png", 1));
+  };
+
+  const actionState: ActionState = useAppSelector((state) => state.actionState);
+
+  const exportImageState = actionState.exportImage;
+
+  useEffect(() => {
+    if (exportImageState != ExportImageState.START) {
+      return;
+    }
+
+    exportImage();
+
+    dispatch(updateExportImageState(ExportImageState.FINISHED));
+  }, [exportImageState]);
+
   return (
     <ModelViewerContainer>
-      <Canvas>
+      <Button onClick={exportImage}>Export</Button>
+      <Canvas ref={canvasRef}>
         <ambientLight color="0xffffff" intensity={2} />
-        <directionalLight
-          color="0xffffff"
-          intensity={2}
-          position={[0.5, 0, 0.866]}
-        />
         <directionalLight
           color="0xffffff"
           intensity={1.5}

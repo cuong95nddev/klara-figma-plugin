@@ -1,20 +1,19 @@
-import { Button, Slider } from "antd";
+import { Button } from "antd";
 import { FunctionComponent } from "react";
 import styled from "styled-components";
 import { MaterialItemState } from ".";
-import ColorPicker from "../ColorPicker";
 
 interface MaterialItemProps {
   materialItemState: MaterialItemState;
-  loadFrameClick?: (selectedItem: MaterialItemState) => void;
+  onLoadFrame?: (selectedItem: MaterialItemState) => void;
 }
 
 const MaterialItem: FunctionComponent<MaterialItemProps> = ({
   materialItemState,
-  loadFrameClick,
+  onLoadFrame,
 }: MaterialItemProps) => {
   const handleLoadFrame = () => {
-    loadFrameClick?.(materialItemState);
+    onLoadFrame?.(materialItemState);
   };
 
   return (
@@ -36,6 +35,9 @@ const MaterialItem: FunctionComponent<MaterialItemProps> = ({
       </div> */}
       <div>
         <Button block onClick={handleLoadFrame}>
+          Get layout
+        </Button>
+        <Button type="primary" block onClick={handleLoadFrame}>
           Load frame
         </Button>
       </div>

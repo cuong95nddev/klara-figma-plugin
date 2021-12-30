@@ -16,7 +16,7 @@ const MaterialSetting: FunctionComponent<MaterialSettingProps> = () => {
     (state) => state.materialSettingState.materialStates
   );
 
-  const handleLoadFrameClick = (selectedItem: MaterialItemState) => {
+  const handleLoadFrame = (selectedItem: MaterialItemState) => {
     dispatch(loadTextureForMaterial(selectedItem.uuid));
   };
 
@@ -28,7 +28,7 @@ const MaterialSetting: FunctionComponent<MaterialSettingProps> = () => {
             <MaterialItem
               key={materialItem.uuid}
               materialItemState={materialItem}
-              loadFrameClick={handleLoadFrameClick}
+              onLoadFrame={handleLoadFrame}
             />
           </Panel>
         ))}

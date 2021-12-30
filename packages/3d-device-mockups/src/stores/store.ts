@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { actionReducer } from "../features/Action";
 import { materialSettingReducer } from "../features/MaterialSetting";
 import { modelViewerReducer } from "../features/ModelViewer";
 
 const rootReducer = combineReducers({
   modelViewerState: modelViewerReducer,
   materialSettingState: materialSettingReducer,
+  actionState: actionReducer,
 });
 
 const store = configureStore({

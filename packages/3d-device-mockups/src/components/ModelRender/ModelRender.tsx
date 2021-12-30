@@ -98,6 +98,8 @@ const ModelRenderInner = (
       return;
     }
 
+    console.log(selectedMaterial);
+
     applyScreenTexture(textureUrl, selectedMaterial);
   }, [textureUrl, selectedMaterialUUID]);
 
@@ -108,7 +110,7 @@ const ModelRenderInner = (
     },
     getScene() {
       return scene;
-    },
+    }
   }));
 
   useEffect(() => {

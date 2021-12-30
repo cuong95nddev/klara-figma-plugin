@@ -21,22 +21,17 @@ const getSelectedNodeBlob = async (): Promise<Uint8Array | null> => {
   return nodeBlob;
 };
 
-export default function () {
-  figma.on("run", async function () {
-    const nodeBlob = await getSelectedNodeBlob();
-    if (!nodeBlob) {
-      return;
-    }
-    emit<SelectionChangedHandler>("SELECTION_CHANGED", nodeBlob);
-  });
+const emitSelectionchange = async (): Promise<void> => {
+  const nodeBlob = await getSelectedNodeBlob();
+  if (!nodeBlob) {
+    return;
+  }
+  emit<SelectionChangedHandler>("SELECTION_CHANGED", nodeBlob);
+};
 
-  figma.on("selectionchange", async function () {
-    const nodeBlob = await getSelectedNodeBlob();
-    if (!nodeBlob) {
-      return;
-    }
-    emit<SelectionChangedHandler>("SELECTION_CHANGED", nodeBlob);
-  });
+export default function () {
+  figma.on("run", emitSelectionchange);
+  figma.on("selectionchange", emitSelectionchange);
 
   on<ExportImageHandler>("EXPORT_IMAGE", (image: ImageNodePlainObject) => {
     const node: RectangleNode = createImageNode(image, {

@@ -1,7 +1,6 @@
 import { emit, on } from "@create-figma-plugin/utilities";
 import { Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Button } from "antd";
 import React, { Suspense, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Object3D, WebGLRenderer } from "three";
@@ -122,15 +121,12 @@ const ModelViewer = () => {
     if (exportImageState != ExportImageState.START) {
       return;
     }
-
     exportImage();
-
     dispatch(updateExportImageState(ExportImageState.FINISHED));
   }, [exportImageState]);
 
   return (
     <ModelViewerContainer>
-      <Button onClick={exportImage}>Export</Button>
       <Canvas ref={canvasRef}>
         <Suspense fallback={null}>
           <ModelRender

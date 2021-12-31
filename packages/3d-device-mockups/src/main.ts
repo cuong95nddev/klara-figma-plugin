@@ -2,11 +2,11 @@ import {
   emit,
   getSelectedNodesOrAllNodes,
   on,
+  setRelaunchButton,
   showUI,
 } from "@create-figma-plugin/utilities";
-import { SelectionChangedHandler } from "./events";
+import { ExportImage, SelectionChangedHandler } from "./events";
 import { ExportImageHandler } from "./events/ExportImageHandler";
-import ImageNodePlainObject from "./features/ModelViewer/ImageNodePlainObject";
 import { createImageNode } from "./utilities/imageNodeUtils";
 
 const getSelectedNodeBlob = async (): Promise<Uint8Array | null> => {
@@ -29,12 +29,13 @@ const emitSelectionchange = async (): Promise<void> => {
   emit<SelectionChangedHandler>("SELECTION_CHANGED", nodeBlob);
 };
 
-export default function () {
+export default async function () {
   figma.on("run", emitSelectionchange);
   figma.on("selectionchange", emitSelectionchange);
 
-  on<ExportImageHandler>("EXPORT_IMAGE", (image: ImageNodePlainObject) => {
-    const node: RectangleNode = createImageNode(image, {
+
+  on<ExportImageHandler>("EXPORT_IMAGE", (exportImage: ExportImage) => {
+    const node: RectangleNode = createImageNode(exportImage.image, {
       resolution: 1,
       xOffset: 0,
       yOffset: 0,
@@ -43,6 +44,8 @@ export default function () {
     figma.currentPage.appendChild(node);
     figma.currentPage.selection = [node];
     figma.viewport.scrollAndZoomIntoView([node]);
+
+    setRelaunchButton(node, "exportImage");
   });
 
   showUI({ width: 800, height: 600 });

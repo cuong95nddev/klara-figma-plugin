@@ -1,3 +1,4 @@
+import { FormatPainterOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { FunctionComponent } from "react";
 import styled from "styled-components";
@@ -33,18 +34,32 @@ const MaterialItem: FunctionComponent<MaterialItemProps> = ({
         <p>opacity</p>
         <Slider min={0} max={1} step={0.1} value={materialItemState.opacity} />
       </div> */}
-      <div>
-        <Button block onClick={handleLoadFrame}>
-          Get layout
-        </Button>
-        <Button type="primary" block onClick={handleLoadFrame}>
-          Load frame
-        </Button>
-      </div>
+
+      <MaterialItemHeader>
+        <MaterialItemTitle>{materialItemState.name}</MaterialItemTitle>
+        <div>
+          <Button
+            icon={<FormatPainterOutlined />}
+            type="text"
+            onClick={handleLoadFrame}
+          />
+        </div>
+      </MaterialItemHeader>
     </MaterialItemContainer>
   );
 };
 
-const MaterialItemContainer = styled.div``;
+const MaterialItemContainer = styled.div`
+  margin-bottom: 4px;
+`;
+
+const MaterialItemHeader = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const MaterialItemTitle = styled.div`
+  flex-grow: 1;
+`;
 
 export default MaterialItem;

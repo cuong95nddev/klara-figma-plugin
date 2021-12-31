@@ -11,10 +11,10 @@ const Viewer = () => {
   return (
     <Provider store={stores}>
       <ViewerContainer>
-        <Col span="16">
+        <Col span="15">
           <ModelViewer />
         </Col>
-        <LeftContainer span="8">
+        <LeftContainer span="9">
           <SettingSection>
             <ViewerSetting />
           </SettingSection>

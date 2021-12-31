@@ -12,7 +12,6 @@ import React, {
 import {
   AmbientLight,
   Color,
-  DirectionalLight,
   Light,
   LinearFilter,
   sRGBEncoding,
@@ -20,7 +19,7 @@ import {
   TextureLoader,
   WebGLRenderer,
 } from "three";
-import { ModelRenderState } from ".";
+import { ModelState } from ".";
 import { Vector3 } from "../../types/Vector";
 import {
   cleanMaterial,
@@ -34,22 +33,32 @@ export declare interface ModelRenderRef {
   setMaterialTexture: (materialUUID: string, url: string) => void;
   getScene: () => any;
   getRenderer: () => WebGLRenderer;
+  getPosition: () => Vector3;
+  getRotation: () => Vector3;
 }
 export declare interface ModelRenderProps {
-  modelRenderState: ModelRenderState;
+  path: string;
+  modelState: ModelState;
   materialsChanged?: (materialItems: MaterialItemState[]) => void;
   onLoaded?: () => void;
 }
 
 const ModelRenderInner = (
-  { modelRenderState, materialsChanged, onLoaded }: ModelRenderProps,
+  { modelState, materialsChanged, onLoaded, path }: ModelRenderProps,
   ref: Ref<ModelRenderRef>
 ) => {
-  const path: string = modelRenderState.path;
-  const rotation: Vector3 = modelRenderState.rotation;
+  const rotation: Vector3 = modelState.rotation;
   const { scene, nodes, materials } = useGLTF(path, true) as any;
   const lights = useRef<Light[]>([]);
   const [updateScene, setUpdateScene] = useState<number>(0);
+  const sceneCloned = useMemo(() => {
+    return scene.clone();
+  }, [scene, updateScene]);
+
+  useEffect(() => {
+    console.log("model rotation updated");
+    sceneCloned.rotation.set(rotation.x, rotation.y, rotation.z);
+  }, [rotation]);
 
   useEffect(() => {
     return () => {
@@ -70,9 +79,9 @@ const ModelRenderInner = (
     const ambientLight = new AmbientLight(0xffffff, 2);
     lights.current.push(ambientLight);
 
-    const directionalLight = new DirectionalLight(0xffffff, 1.5);
-    directionalLight.position.set(-6, 2, 2);
-    lights.current.push(directionalLight);
+    // const directionalLight = new DirectionalLight(0xffffff, 1.5);
+    // directionalLight.position.set(-6, 2, 2);
+    // lights.current.push(directionalLight);
 
     for (const light of lights.current) {
       scene.add(light);
@@ -84,10 +93,6 @@ const ModelRenderInner = (
       onLoaded();
     }
   }, [scene]);
-
-  const sceneCloned = useMemo(() => {
-    return scene.clone();
-  }, [scene, updateScene]);
 
   const { gl } = useThree();
 
@@ -147,6 +152,20 @@ const ModelRenderInner = (
     },
     getRenderer() {
       return gl;
+    },
+    getPosition() {
+      return {
+        x: scene.position.x,
+        y: scene.position.y,
+        z: scene.position.z,
+      };
+    },
+    getRotation() {
+      return {
+        x: scene.rotation.x,
+        y: scene.rotation.y,
+        z: scene.rotation.z,
+      };
     },
   }));
 

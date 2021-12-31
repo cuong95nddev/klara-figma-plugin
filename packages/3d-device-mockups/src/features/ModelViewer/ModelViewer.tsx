@@ -1,13 +1,15 @@
 import { emit, on } from "@create-figma-plugin/utilities";
 import { Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { Suspense, useEffect, useRef } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Object3D, WebGLRenderer } from "three";
+import { ModelSelection } from ".";
 import Camera, { CameraState } from "../../components/Camera";
 import { CameraRef } from "../../components/Camera/Camera";
 import { MaterialItemState } from "../../components/MaterialItem";
-import ModelRender, { ModelRenderState } from "../../components/ModelRender";
+import ModelRender, { ModelState } from "../../components/ModelRender";
+import defaultModel from "../../components/ModelRender/DefaultModel";
 import { ModelRenderRef } from "../../components/ModelRender/ModelRender";
 import { SelectionChangedHandler } from "../../events";
 import { ExportImageHandler } from "../../events/ExportImageHandler";
@@ -20,12 +22,20 @@ import {
 import { ActionState } from "../Action";
 import { updateExportImageState } from "../Action/ActionSlide";
 import { ExportImageState } from "../Action/ExportImageState";
+import { finishResetCameraAction } from "../CameraSetting/CameraSettingSlide";
+import { ResetCameraAction } from "../CameraSetting/ResetCameraAction";
 import { MaterialSettingState } from "../MaterialSetting";
 import {
   loadTextureForMaterialDone,
   updateMaterialStates,
 } from "../MaterialSetting/MaterialSettingSlide";
-import { updateCameraState, updateSelectedFrame } from "./ModelViewerSlide";
+import {
+  updateCameraState,
+  updateModelPosition,
+  updateModelRotation,
+  updateModelSelection,
+  updateSelectedFrame,
+} from "./ModelViewerSlide";
 import ModelViewerState from "./ModelViewerState";
 
 const ModelViewer = () => {
@@ -38,9 +48,44 @@ const ModelViewer = () => {
     (state) => state.modelViewerState
   );
 
-  const modelRenderState: ModelRenderState = modelViewerState.modelRenderState;
+  const modelState: ModelState = modelViewerState.modelState;
   const cameraState: CameraState = modelViewerState.cameraState;
   const selectedFrame: string = modelViewerState.selectedFrame || "";
+  const resetCameraActionState: ResetCameraAction = useAppSelector(
+    (state) => state.cameraSettingState.resetCameraAction
+  );
+
+  const modelSelection: ModelSelection = useAppSelector(
+    (state) => state.modelViewerState.modelSelection
+  );
+
+  const [path, setPath] = useState<string>("");
+
+  useEffect(() => {
+    dispatch(
+      updateModelSelection({
+        isDefault: true,
+        id: defaultModel[0].id,
+      })
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!modelSelection) {
+      return;
+    }
+
+    if (modelSelection.isDefault) {
+      const modelPath: string | undefined = defaultModel.find(
+        (m) => m.id === modelSelection.id
+      )?.path;
+
+      if (!modelPath) {
+        return;
+      }
+      setPath(modelPath);
+    }
+  }, [modelSelection]);
 
   useEffect(() => {
     on<SelectionChangedHandler>(
@@ -81,12 +126,30 @@ const ModelViewer = () => {
 
   const cameraRef = useRef<CameraRef>(null);
 
+  useEffect(() => {
+    if (resetCameraActionState != ResetCameraAction.START) {
+      return;
+    }
+    resetCamera();
+    dispatch(finishResetCameraAction());
+  }, [resetCameraActionState]);
+
   const resetCamera = (): void => {
     cameraRef.current?.reset(modelRenderRef.current?.getScene());
   };
 
   const handleModelLoaded = (): void => {
     resetCamera();
+
+    let modelPosition = modelRenderRef.current?.getPosition();
+    if (modelPosition) {
+      dispatch(updateModelPosition(modelPosition));
+    }
+
+    let modelRotation = modelRenderRef.current?.getRotation();
+    if (modelRotation) {
+      dispatch(updateModelRotation(modelRotation));
+    }
   };
 
   const exportImage = async (): Promise<any> => {
@@ -105,11 +168,14 @@ const ModelViewer = () => {
     const blob = getImageBlob(image);
 
     emit<ExportImageHandler>("EXPORT_IMAGE", {
-      width: imageElement.width,
-      height: imageElement.height,
-      bytes: blob,
-      x: 0,
-      y: 0,
+      viewerState: { ...modelViewerState },
+      image: {
+        width: imageElement.width,
+        height: imageElement.height,
+        bytes: blob,
+        x: 0,
+        y: 0,
+      },
     });
   };
 
@@ -130,7 +196,8 @@ const ModelViewer = () => {
       <Canvas ref={canvasRef}>
         <Suspense fallback={null}>
           <ModelRender
-            modelRenderState={{ ...modelRenderState }}
+            path={path}
+            modelState={{ ...modelState }}
             materialsChanged={handleMaterialsChanged}
             onLoaded={handleModelLoaded}
             ref={modelRenderRef}
@@ -139,8 +206,8 @@ const ModelViewer = () => {
         </Suspense>
         <Camera
           ref={cameraRef}
-          cameraState={cameraState}
-          onchange={handleCameraChange}
+          cameraState={{ ...cameraState }}
+          onCameraChange={handleCameraChange}
         />
       </Canvas>
       <Loader />

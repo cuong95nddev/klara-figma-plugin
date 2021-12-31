@@ -1,8 +1,8 @@
-import { MaterialItemState } from "../../components/MaterialItem";
-import { ModelRenderState } from "../../components/ModelRender";
+import { ModelState } from "../../components/ModelRender";
 
 export default interface ModelViewerState {
-  modelRenderState: ModelRenderState;
+  modelSelection?: ModelSelection;
+  modelState: ModelState;
   cameraState: CameraState;
-  selectedFrame?: string
+  selectedFrame?: string;
 }

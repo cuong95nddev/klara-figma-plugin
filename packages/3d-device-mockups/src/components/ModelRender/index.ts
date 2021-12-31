@@ -1,2 +1,2 @@
 export { default } from "./ModelRender";
-export type { default as ModelRenderState } from "./ModelRenderState";
+export type { default as ModelState } from "./ModelState";

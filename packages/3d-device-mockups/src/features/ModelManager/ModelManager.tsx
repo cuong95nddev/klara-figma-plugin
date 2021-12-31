@@ -1,10 +1,10 @@
 import { Select } from "antd";
-import { SelectValue } from "antd/lib/select";
 import { FunctionComponent } from "react";
 import styled from "styled-components";
 import defaultModel from "../../components/ModelRender/DefaultModel";
-import { useAppDispatch } from "../../hooks";
-import { updateModelPath } from "../ModelViewer/ModelViewerSlide";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { ModelSelection } from "../ModelViewer";
+import { updateModelSelection } from "../ModelViewer/ModelViewerSlide";
 
 const { Option } = Select;
 
@@ -12,23 +12,34 @@ interface ModelManagerProps {}
 
 const ModelManager: FunctionComponent<ModelManagerProps> = () => {
   const dispatch = useAppDispatch();
+  const modelSelection: ModelSelection = useAppSelector(
+    (state) => state.modelViewerState.modelSelection
+  );
 
-  const handleChangeModel = (value: SelectValue): void => {
-    const modelID: number = value as number;
+  const handleProvinceChange = (value: any) => {
+    const id: number = value as number;
     const modelPath: string | undefined = defaultModel.find(
-      (m) => m.id === modelID
+      (m) => m.id === id
     )?.path;
 
     if (!modelPath) {
       return;
     }
 
-    dispatch(updateModelPath(modelPath!));
+    dispatch(
+      updateModelSelection({
+        isDefault: true,
+        id: id,
+      })
+    );
   };
 
   return (
     <ModelManagerContainer>
-      <ModelSelect onChange={handleChangeModel}>
+      <ModelSelect
+        onChange={handleProvinceChange}
+        value={modelSelection ? modelSelection.id : null}
+      >
         {defaultModel.map((item) => (
           <Option key={item.id} value={item.id}>
             {item.name}

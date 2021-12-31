@@ -1,5 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import CameraControls from "camera-controls";
+import _ from "lodash";
 import React, {
   forwardRef,
   ForwardRefRenderFunction,
@@ -28,7 +29,7 @@ export declare interface CameraRef {
 
 export declare interface CameraProps {
   cameraState?: CameraState;
-  onchange?: (cameraState: CameraState) => void;
+  onCameraChange?: (cameraState: CameraState) => void;
 }
 
 const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
@@ -40,7 +41,7 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
       },
       distance: 0,
     },
-    onchange,
+    onCameraChange,
   }: CameraProps,
   ref: Ref<CameraRef>
 ) => {
@@ -48,44 +49,49 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
   const cameraControlRef = useRef<CameraControls>(null!);
   useCameraKeyboard(cameraControlRef);
 
-  const dirty = useRef(false);
+  const cameraUpdated = useRef(false);
 
-  // useEffect(() => {
-  //   if (dirty.current) {
-  //     dirty.current = false;
-  //     return;
-  //   }
+  useEffect(() => {
+    if (cameraUpdated.current) {
+      cameraUpdated.current = false;
+      return;
+    }
 
-  //   // cameraControlRef.current.rotateTo(
-  //   //   MathUtils.degToRad(cameraState.angle.azimuth),
-  //   //   MathUtils.degToRad(cameraState.angle.polar),
-  //   //   true
-  //   // );
+    cameraControlRef.current.rotateTo(
+      MathUtils.degToRad(cameraState.angle.azimuth),
+      MathUtils.degToRad(cameraState.angle.polar),
+      false
+    );
 
-  //   // cameraControlRef.current.dollyTo(cameraState.distance, true);
+    cameraControlRef.current.dollyTo(cameraState.distance, false);
+  }, [cameraState]);
 
-  //   //cameraControlRef.current.reset();
-  // }, [cameraState]);
+  const handleUpdateCameraState = () => {
+    cameraUpdated.current = true;
 
-  // const handleUpdateEvent = () => {
-  //   dirty.current = true;
+    if (!onCameraChange) {
+      return;
+    }
 
-  //   if (!onchange) {
-  //     return;
-  //   }
+    onCameraChange({
+      angle: {
+        azimuth: Math.round(
+          MathUtils.radToDeg(cameraControlRef.current.azimuthAngle)
+        ),
+        polar: Math.round(
+          MathUtils.radToDeg(cameraControlRef.current.polarAngle)
+        ),
+      },
+      distance: cameraControlRef.current.distance,
+    });
 
-  //   onchange({
-  //     angle: {
-  //       azimuth: Math.round(
-  //         MathUtils.radToDeg(cameraControlRef.current.azimuthAngle)
-  //       ),
-  //       polar: Math.round(
-  //         MathUtils.radToDeg(cameraControlRef.current.polarAngle)
-  //       ),
-  //     },
-  //     distance: cameraControlRef.current.distance,
-  //   });
-  // };
+    console.log("camera updated");
+  };
+
+  const debounceHandleUpdateCameraState = _.debounce(
+    handleUpdateCameraState,
+    20
+  );
 
   useEffect(() => {
     let camera = cameraControlRef.current.camera as PerspectiveCamera;
@@ -95,19 +101,24 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
     camera.aspect = gl.domElement.clientWidth / gl.domElement.clientHeight;
     camera.updateProjectionMatrix();
 
-    // cameraControlRef.current.addEventListener("controlend", handleUpdateEvent);
-    // return () => {
-    //   cameraControlRef.current.removeEventListener(
-    //     "controlend",
-    //     handleUpdateEvent
-    //   );
-    // };
+    cameraControlRef.current.addEventListener(
+      "update",
+      debounceHandleUpdateCameraState
+    );
+
+    return () => {
+      cameraControlRef.current.removeEventListener(
+        "update",
+        debounceHandleUpdateCameraState
+      );
+    };
   }, []);
 
   useImperativeHandle(ref, () => ({
     reset(box3OrObject: Object3D<Event> | Box3) {
       cameraControlRef.current.reset();
       paddingInCssPixel(box3OrObject, 30, 30, 30, 30);
+      handleUpdateCameraState();
     },
     getCamera() {
       return cameraControlRef.current.camera;

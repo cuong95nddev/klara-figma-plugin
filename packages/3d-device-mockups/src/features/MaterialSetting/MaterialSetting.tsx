@@ -22,21 +22,21 @@ const MaterialSetting: FunctionComponent<MaterialSettingProps> = () => {
 
   return (
     <MaterialSettingContainer>
-      <Collapse accordion>
+      <MaterialList>
         {materialStates.map((materialItem) => (
-          <Panel header={materialItem.name} key={materialItem.uuid}>
-            <MaterialItem
-              key={materialItem.uuid}
-              materialItemState={materialItem}
-              onLoadFrame={handleLoadFrame}
-            />
-          </Panel>
+          <MaterialItem
+            key={materialItem.uuid}
+            materialItemState={materialItem}
+            onLoadFrame={handleLoadFrame}
+          />
         ))}
-      </Collapse>
+      </MaterialList>
     </MaterialSettingContainer>
   );
 };
 
 const MaterialSettingContainer = styled.div``;
+
+const MaterialList = styled.div``;
 
 export default MaterialSetting;

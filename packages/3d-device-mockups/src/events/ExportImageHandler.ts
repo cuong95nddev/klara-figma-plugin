@@ -1,7 +1,7 @@
 import { EventHandler } from "@create-figma-plugin/utilities";
-import ImageNodePlainObject from "../features/ModelViewer/ImageNodePlainObject";
+import { ExportImage } from ".";
 
 export interface ExportImageHandler extends EventHandler {
-  name: 'EXPORT_IMAGE'
-  handler: (image: ImageNodePlainObject) => void
+  name: "EXPORT_IMAGE";
+  handler: (exportImage: ExportImage) => void;
 }

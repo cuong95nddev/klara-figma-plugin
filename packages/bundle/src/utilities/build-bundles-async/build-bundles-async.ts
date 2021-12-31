@@ -87,6 +87,12 @@ async function buildMainBundleAsync(options: {
           resolve: {
             fullySpecified: false,
           },
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env']
+            }
+          }
         },
       ],
     },

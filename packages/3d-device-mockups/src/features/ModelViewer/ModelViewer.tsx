@@ -1,7 +1,13 @@
 import { emit, on } from "@create-figma-plugin/utilities";
 import { Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { Object3D, WebGLRenderer } from "three";
 import { ModelSelection } from ".";
@@ -48,7 +54,6 @@ import {
   updateModelPosition,
   updateModelRotation,
   updateModelSelection,
-  updateModelViewerState,
 } from "./ModelViewerSlide";
 import ModelViewerState from "./ModelViewerState";
 
@@ -77,7 +82,8 @@ const ModelViewer = () => {
 
   const [path, setPath] = useState<string>();
 
-  const [viewerStateFromPlugin, setViewerStateFromPlugin] = useState<ModelViewerState>();
+  const [viewerStateFromPlugin, setViewerStateFromPlugin] =
+    useState<ModelViewerState>();
 
   useEffect(() => {
     if (!modelSelection) {
@@ -97,7 +103,6 @@ const ModelViewer = () => {
   const [isModelFromPluginDataLoaded, setIsModelFromPluginDataLoaded] =
     useState<boolean>(false);
 
-
   useEffect(() => {
     on<StartPluginHandler>("START_PLUGIN", async (startPlugin: StartPlugin) => {
       if (!startPlugin) {
@@ -106,7 +111,7 @@ const ModelViewer = () => {
 
       if (startPlugin.viewerState) {
         const viewerState = startPlugin.viewerState;
-        dispatch(updateModelSelection({...viewerState.modelSelection!}));
+        dispatch(updateModelSelection({ ...viewerState.modelSelection! }));
 
         if (startPlugin.selectedNodes) {
           for (const node of startPlugin.selectedNodes) {
@@ -116,7 +121,7 @@ const ModelViewer = () => {
           setSelectedNodes(startPlugin.selectedNodes);
         }
 
-        setViewerStateFromPlugin({...viewerState});
+        setViewerStateFromPlugin({ ...viewerState });
         return;
       }
 
@@ -177,9 +182,9 @@ const ModelViewer = () => {
     dispatch(loadTextureForMaterialDone());
   }, [loadTextureMaterialId]);
 
-  const handleCameraChange = (cameraState: CameraState) => {
+  const handleCameraChange = useCallback((cameraState: CameraState) => {
     dispatch(updateCameraState(cameraState));
-  };
+  }, []);
 
   const handleMaterialsChanged = (materialItems: MaterialItemState[]): void => {
     dispatch(updateMaterialStates(materialItems));
@@ -201,16 +206,23 @@ const ModelViewer = () => {
   };
 
   const handleModelLoaded = (): void => {
-    dispatch(triggerResetCamera());
     if (isModelFromPluginDataLoaded) {
       dispatch(triggerResetCamera());
     } else {
-
-      if(viewerStateFromPlugin){
+      dispatch(triggerResetCamera());
+      if (viewerStateFromPlugin) {
         setTimeout(() => {
-          dispatch(updateCameraState({...viewerStateFromPlugin.cameraState}))
-          dispatch(updateModelPosition({...viewerStateFromPlugin.modelState.position}));
-          dispatch(updateModelRotation({...viewerStateFromPlugin.modelState.rotation}));
+          dispatch(updateCameraState({ ...viewerStateFromPlugin.cameraState }));
+          dispatch(
+            updateModelPosition({
+              ...viewerStateFromPlugin.modelState.position,
+            })
+          );
+          dispatch(
+            updateModelRotation({
+              ...viewerStateFromPlugin.modelState.rotation,
+            })
+          );
         }, 0);
       }
 
@@ -317,7 +329,7 @@ const ModelViewer = () => {
 const ModelViewerContainer = styled.div`
   height: 100%;
   width: 100%;
-  background: #eee
+  background: #303030
     url('data:image/svg+xml,\
     <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill-opacity=".15">\
       <rect x="200" width="200" height="200" />\

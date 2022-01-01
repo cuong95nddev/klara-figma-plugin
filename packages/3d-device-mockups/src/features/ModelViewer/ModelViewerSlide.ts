@@ -20,8 +20,8 @@ const initialState: ModelViewerState = {
   },
   cameraState: {
     angle: {
+      polar: 90,
       azimuth: 0,
-      polar: 0,
     },
     distance: 0,
   },

@@ -15,6 +15,7 @@ import ModelRender, {
 } from "../../components/ModelRender";
 import { ModelRenderRef } from "../../components/ModelRender/ModelRender";
 import {
+  NodeSelected,
   SelectionChanged,
   SelectionChangedHandler,
   StartPlugin,
@@ -42,12 +43,12 @@ import {
   updateMaterialStates,
 } from "../MaterialSetting/MaterialSettingSlide";
 import {
+  addMaterialTexture,
   updateCameraState,
   updateModelPosition,
   updateModelRotation,
   updateModelSelection,
   updateModelViewerState,
-  updateSelectedFrame,
 } from "./ModelViewerSlide";
 import ModelViewerState from "./ModelViewerState";
 
@@ -63,12 +64,14 @@ const ModelViewer = () => {
 
   const modelState: ModelState = modelViewerState.modelState;
   const cameraState: CameraState = modelViewerState.cameraState;
-  const selectedFrame: string = modelViewerState.selectedFrame || "";
+  const [selectedNode, setSelectedNode] = useState<NodeSelected | undefined>();
+  const [selectedNodes, setSelectedNodes] = useState<NodeSelected[]>([]);
+
   const resetCameraTrigger: ResetCameraTrigger = useAppSelector(
     (state) => state.cameraSettingState.resetCameraTrigger
   );
 
-  const modelSelection: ModelSelection = useAppSelector(
+  const modelSelection: ModelSelection | undefined = useAppSelector(
     (state) => state.modelViewerState.modelSelection
   );
 
@@ -101,12 +104,24 @@ const ModelViewer = () => {
       if (startPlugin.viewerState) {
         const viewerState = startPlugin.viewerState;
         dispatch(updateModelViewerState({ ...viewerState }));
+
+        if (startPlugin.selectedNodes) {
+          for (const node of startPlugin.selectedNodes) {
+            node.nodeDataUrl = (await readAsDataURL(node.nodeBlob)) as string;
+          }
+
+          setSelectedNodes(startPlugin.selectedNodes);
+        }
+
         return;
       }
 
       // update select frame
-      if (startPlugin.nodeBlob) {
-        await handleSelectedNode(startPlugin.nodeBlob);
+      if (startPlugin.selectedNode) {
+        startPlugin.selectedNode.nodeDataUrl = (await readAsDataURL(
+          startPlugin.selectedNode.nodeBlob
+        )) as string;
+        setSelectedNode(startPlugin.selectedNode);
       }
 
       // load default model
@@ -124,34 +139,43 @@ const ModelViewer = () => {
     on<SelectionChangedHandler>(
       "SELECTION_CHANGED",
       async (selectionChanged: SelectionChanged) => {
-        await handleSelectedNode(selectionChanged.nodeBlob);
+        selectionChanged.selectedNode.nodeDataUrl = (await readAsDataURL(
+          selectionChanged.selectedNode.nodeBlob
+        )) as string;
+        setSelectedNode(selectionChanged.selectedNode);
       }
     );
   }, []);
-
-  const handleSelectedNode = async (nodeBlob: Uint8Array): Promise<void> => {
-    const result: string = (await readAsDataURL(nodeBlob)) as string;
-    dispatch(updateSelectedFrame(result));
-  };
 
   const materialSettingState: MaterialSettingState = useAppSelector(
     (state) => state.materialSettingState
   );
 
-  const loadTextureMaterialUUID = materialSettingState.loadTextureMaterialUUID;
+  const loadTextureMaterialId = materialSettingState.loadTextureMaterialId;
 
   useEffect(() => {
-    if (!loadTextureMaterialUUID) {
+    if (
+      !loadTextureMaterialId ||
+      !selectedNode ||
+      !selectedNode.nodeDataUrl
+    ) {
       return;
     }
 
     modelRenderRef.current?.setMaterialTexture(
-      loadTextureMaterialUUID,
-      selectedFrame
+      loadTextureMaterialId,
+      selectedNode.nodeDataUrl
+    );
+
+    dispatch(
+      addMaterialTexture({
+        materialId: loadTextureMaterialId,
+        nodeId: selectedNode?.nodeId,
+      })
     );
 
     dispatch(loadTextureForMaterialDone());
-  }, [loadTextureMaterialUUID]);
+  }, [loadTextureMaterialId]);
 
   const handleCameraChange = (cameraState: CameraState) => {
     dispatch(updateCameraState(cameraState));
@@ -180,6 +204,25 @@ const ModelViewer = () => {
     if (isModelFromPluginDataLoaded) {
       dispatch(triggerResetCamera());
     } else {
+      if (
+        selectedNodes &&
+        modelViewerState.modelSelection &&
+        modelViewerState.modelSelection.materialTextures
+      ) {
+        for (const materialTexture of modelViewerState.modelSelection
+          .materialTextures) {
+          const node = selectedNodes.filter(
+            (i) => i.nodeId === materialTexture.nodeId
+          )[0];
+          if (node && node.nodeDataUrl) {
+            modelRenderRef.current?.setMaterialTexture(
+              materialTexture.materialId,
+              node.nodeDataUrl
+            );
+          }
+        }
+      }
+
       setIsModelFromPluginDataLoaded(true);
     }
 

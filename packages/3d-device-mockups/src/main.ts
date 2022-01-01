@@ -1,5 +1,6 @@
 import {
   emit,
+  getSceneNodeById,
   getSelectedNodesOrAllNodes,
   on,
   setRelaunchButton,
@@ -7,40 +8,69 @@ import {
 } from "@create-figma-plugin/utilities";
 import {
   ExportImage,
+  NodeSelected,
   SelectionChangedHandler,
   StartPluginHandler,
 } from "./events";
 import { ExportImageHandler } from "./events/ExportImageHandler";
+import { MaterialTexture } from "./features/ModelViewer";
+import ModelViewerState from "./features/ModelViewer/ModelViewerState";
 import { createImageNode } from "./utilities/imageNodeUtils";
 
 const handleSelectionChanged = async (): Promise<void> => {
-  const selectedNodes: SceneNode[] = getSelectedNodesOrAllNodes();
-  if (!selectedNodes.length) {
+  const nodes: SceneNode[] = getSelectedNodesOrAllNodes();
+
+  if (!nodes.length) {
     return;
   }
 
-  const nodeBlob: Uint8Array = await (
-    selectedNodes[0] as ExportMixin
-  ).exportAsync();
-
+  const node = nodes[0];
+  const nodeBlob = await (node as ExportMixin).exportAsync();
   emit<SelectionChangedHandler>("SELECTION_CHANGED", {
-    nodeBlob: nodeBlob,
+    selectedNode: {
+      nodeBlob: nodeBlob,
+      nodeId: node.id,
+    },
   });
 };
 
 const handleStartPlugin = async (): Promise<void> => {
-  const selectedNodes: SceneNode[] = getSelectedNodesOrAllNodes();
+  const nodes: SceneNode[] = getSelectedNodesOrAllNodes();
 
-  const pluginData = selectedNodes[0].getPluginData("viewerState");
-  const viewerState = pluginData ? JSON.parse(pluginData) : undefined;
-  let nodeBlob: Uint8Array | undefined = selectedNodes.length
-    ? await (selectedNodes[0] as ExportMixin).exportAsync()
-    : undefined;
+  if (!nodes.length) {
+    return;
+  }
+  const node: SceneNode = nodes[0];
+  const viewerStateData = node.getPluginData("viewerState");
 
-  emit<StartPluginHandler>("START_PLUGIN", {
-    nodeBlob: nodeBlob,
-    viewerState: viewerState,
-  });
+  if (viewerStateData) {
+    let viewerState: ModelViewerState = JSON.parse(viewerStateData);
+    let selectedNodes: NodeSelected[] = [];
+    if (viewerState.modelSelection?.materialTextures) {
+      const materialTextures: MaterialTexture[] =
+        viewerState.modelSelection.materialTextures;
+      for (const materialTexture of materialTextures) {
+        selectedNodes.push({
+          nodeId: materialTexture.nodeId,
+          nodeBlob: await (
+            getSceneNodeById(materialTexture.nodeId) as ExportMixin
+          ).exportAsync(),
+        });
+      }
+    }
+
+    emit<StartPluginHandler>("START_PLUGIN", {
+      viewerState: JSON.parse(viewerStateData),
+      selectedNodes: selectedNodes,
+    });
+  } else {
+    emit<StartPluginHandler>("START_PLUGIN", {
+      selectedNode: {
+        nodeId: node.id,
+        nodeBlob: await (node as ExportMixin).exportAsync(),
+      },
+    });
+  }
 };
 
 export default async function () {

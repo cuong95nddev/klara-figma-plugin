@@ -30,7 +30,7 @@ import {
 import { MaterialItemState } from "../MaterialItem";
 
 export declare interface ModelRenderRef {
-  setMaterialTexture: (materialUUID: string, url: string) => void;
+  setMaterialTexture: (materialId: number, url: string) => void;
   getScene: () => any;
   getRenderer: () => WebGLRenderer;
   getPosition: () => Vector3;
@@ -97,7 +97,7 @@ const ModelRenderInner = (
   const { gl } = useThree();
 
   const [textureUrl, setTextureUrl] = useState<string>();
-  const [selectedMaterialUUID, setSelectedMaterialUUID] = useState<string>();
+  const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
 
   const textureLoader = useRef<TextureLoader>();
 
@@ -126,7 +126,7 @@ const ModelRenderInner = (
 
   const getSelectedMaterial = (): any =>
     Object.values(materials).find(
-      (material: any) => material.uuid === selectedMaterialUUID
+      (material: any) => material.id === selectedMaterialId
     );
 
   useEffect(() => {
@@ -140,11 +140,11 @@ const ModelRenderInner = (
     }
 
     applyScreenTexture(textureUrl, selectedMaterial);
-  }, [textureUrl, selectedMaterialUUID]);
+  }, [textureUrl, selectedMaterialId]);
 
   useImperativeHandle(ref, () => ({
-    setMaterialTexture(materialUUID: string, url: string) {
-      setSelectedMaterialUUID(materialUUID);
+    setMaterialTexture(materialId: number, url: string) {
+      setSelectedMaterialId(materialId);
       setTextureUrl(url);
     },
     getScene() {
@@ -180,7 +180,7 @@ const ModelRenderInner = (
     let materialItems: MaterialItemState[] = Object.values(materials).map(
       (material: any) =>
         ({
-          uuid: material.uuid,
+          id: material.id,
           name: material.name,
           color: material.color.getHexString(),
           metalness: material.metalness,

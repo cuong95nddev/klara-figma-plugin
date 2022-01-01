@@ -6,8 +6,10 @@ import React, {
   ForwardRefRenderFunction,
   Fragment,
   Ref,
+  useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from "react";
 import {
@@ -88,9 +90,9 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
     console.log("camera updated");
   };
 
-  const debounceHandleUpdateCameraState = _.debounce(
-    handleUpdateCameraState,
-    20
+  const debounceHandleUpdateCameraState = useMemo(
+    () => _.debounce(handleUpdateCameraState, 20),
+    []
   );
 
   useEffect(() => {

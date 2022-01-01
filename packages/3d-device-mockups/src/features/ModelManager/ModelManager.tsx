@@ -12,7 +12,7 @@ interface ModelManagerProps {}
 
 const ModelManager: FunctionComponent<ModelManagerProps> = () => {
   const dispatch = useAppDispatch();
-  const modelSelection: ModelSelection = useAppSelector(
+  const modelSelection: ModelSelection | undefined = useAppSelector(
     (state) => state.modelViewerState.modelSelection
   );
 

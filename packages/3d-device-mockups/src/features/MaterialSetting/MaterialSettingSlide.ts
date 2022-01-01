@@ -18,15 +18,15 @@ export const slice = createSlice({
       state.materialStates = action.payload;
     },
 
-    updateSelectedMaterialUUID: (state, action: PayloadAction<string>) => {
-      state.selectedMaterialUUID = action.payload;
+    updateSelectedMaterialUUID: (state, action: PayloadAction<number>) => {
+      state.selectedMaterialId = action.payload;
     },
 
-    loadTextureForMaterial: (state, action: PayloadAction<string>) => {
-      state.loadTextureMaterialUUID = action.payload;
+    loadTextureForMaterial: (state, action: PayloadAction<number>) => {
+      state.loadTextureMaterialId = action.payload;
     },
     loadTextureForMaterialDone: (state) => {
-      state.loadTextureMaterialUUID = "";
+      state.loadTextureMaterialId = undefined;
     },
   },
 });

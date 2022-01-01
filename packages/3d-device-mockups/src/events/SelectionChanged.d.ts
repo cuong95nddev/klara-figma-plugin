@@ -1,5 +1,5 @@
-import ModelViewerState from "../features/ModelViewer/ModelViewerState";
+import { NodeSelected } from ".";
 
 export default interface SelectionChanged {
-    nodeBlob: Uint8Array;
+  selectedNode: NodeSelected;
 }

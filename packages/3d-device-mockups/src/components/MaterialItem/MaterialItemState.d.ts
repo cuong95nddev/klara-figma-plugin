@@ -1,5 +1,5 @@
 export default interface MaterialItemState {
-  uuid: string;
+  id: number;
   name: string;
   metalness: number;
   roughness: number;

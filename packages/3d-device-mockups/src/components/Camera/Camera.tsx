@@ -9,7 +9,6 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
 } from "react";
 import {
@@ -51,11 +50,11 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
   const cameraControlRef = useRef<CameraControls>(null!);
   useCameraKeyboard(cameraControlRef);
 
-  const cameraUpdated = useRef(false);
+  const cameraShouldUpdate = useRef(true);
 
   useEffect(() => {
-    if (cameraUpdated.current) {
-      cameraUpdated.current = false;
+    if (!cameraShouldUpdate.current) {
+      cameraShouldUpdate.current = true;
       return;
     }
 
@@ -69,7 +68,7 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
   }, [cameraState]);
 
   const handleUpdateCameraState = () => {
-    cameraUpdated.current = true;
+    cameraShouldUpdate.current = false;
 
     if (!onCameraChange) {
       return;
@@ -90,8 +89,8 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
     console.log("camera updated");
   };
 
-  const debounceHandleUpdateCameraState = useMemo(
-    () => _.debounce(handleUpdateCameraState, 20),
+  const debounceHandleUpdateCameraState = useCallback(
+    _.debounce(handleUpdateCameraState, 150),
     []
   );
 
@@ -118,7 +117,7 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
 
   useImperativeHandle(ref, () => ({
     reset(box3OrObject: Object3D<Event> | Box3) {
-      cameraControlRef.current.reset();
+      //cameraControlRef.current.reset();
       paddingInCssPixel(box3OrObject, 30, 30, 30, 30);
       handleUpdateCameraState();
     },

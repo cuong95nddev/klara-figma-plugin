@@ -77,6 +77,8 @@ const ModelViewer = () => {
 
   const [path, setPath] = useState<string>();
 
+  const [viewerStateFromPlugin, setViewerStateFromPlugin] = useState<ModelViewerState>();
+
   useEffect(() => {
     if (!modelSelection) {
       return;
@@ -95,6 +97,7 @@ const ModelViewer = () => {
   const [isModelFromPluginDataLoaded, setIsModelFromPluginDataLoaded] =
     useState<boolean>(false);
 
+
   useEffect(() => {
     on<StartPluginHandler>("START_PLUGIN", async (startPlugin: StartPlugin) => {
       if (!startPlugin) {
@@ -103,7 +106,7 @@ const ModelViewer = () => {
 
       if (startPlugin.viewerState) {
         const viewerState = startPlugin.viewerState;
-        dispatch(updateModelViewerState({ ...viewerState }));
+        dispatch(updateModelSelection({...viewerState.modelSelection!}));
 
         if (startPlugin.selectedNodes) {
           for (const node of startPlugin.selectedNodes) {
@@ -113,6 +116,7 @@ const ModelViewer = () => {
           setSelectedNodes(startPlugin.selectedNodes);
         }
 
+        setViewerStateFromPlugin({...viewerState});
         return;
       }
 
@@ -154,11 +158,7 @@ const ModelViewer = () => {
   const loadTextureMaterialId = materialSettingState.loadTextureMaterialId;
 
   useEffect(() => {
-    if (
-      !loadTextureMaterialId ||
-      !selectedNode ||
-      !selectedNode.nodeDataUrl
-    ) {
+    if (!loadTextureMaterialId || !selectedNode || !selectedNode.nodeDataUrl) {
       return;
     }
 
@@ -201,9 +201,19 @@ const ModelViewer = () => {
   };
 
   const handleModelLoaded = (): void => {
+    dispatch(triggerResetCamera());
     if (isModelFromPluginDataLoaded) {
       dispatch(triggerResetCamera());
     } else {
+
+      if(viewerStateFromPlugin){
+        setTimeout(() => {
+          dispatch(updateCameraState({...viewerStateFromPlugin.cameraState}))
+          dispatch(updateModelPosition({...viewerStateFromPlugin.modelState.position}));
+          dispatch(updateModelRotation({...viewerStateFromPlugin.modelState.rotation}));
+        }, 0);
+      }
+
       if (
         selectedNodes &&
         modelViewerState.modelSelection &&

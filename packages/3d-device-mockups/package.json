@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build-performance": "build-figma-plugin --production --speedMeasure --bundleAnalyzer",
-    "build": "build-figma-plugin",
+    "build": "build-figma-plugin --production",
     "watch": "build-figma-plugin --typecheck --watch"
   },
   "figma-plugin": {

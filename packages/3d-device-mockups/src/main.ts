@@ -5,34 +5,47 @@ import {
   setRelaunchButton,
   showUI,
 } from "@create-figma-plugin/utilities";
-import { ExportImage, SelectionChangedHandler } from "./events";
+import {
+  ExportImage,
+  SelectionChangedHandler,
+  StartPluginHandler,
+} from "./events";
 import { ExportImageHandler } from "./events/ExportImageHandler";
 import { createImageNode } from "./utilities/imageNodeUtils";
 
-const getSelectedNodeBlob = async (): Promise<Uint8Array | null> => {
+const handleSelectionChanged = async (): Promise<void> => {
   const selectedNodes: SceneNode[] = getSelectedNodesOrAllNodes();
-
   if (!selectedNodes.length) {
-    return null;
-  }
-  const firstSelectedNode: ExportMixin = selectedNodes[0] as ExportMixin;
-  const nodeBlob: Uint8Array = await firstSelectedNode.exportAsync();
-
-  return nodeBlob;
-};
-
-const emitSelectionchange = async (): Promise<void> => {
-  const nodeBlob = await getSelectedNodeBlob();
-  if (!nodeBlob) {
     return;
   }
-  emit<SelectionChangedHandler>("SELECTION_CHANGED", nodeBlob);
+
+  const nodeBlob: Uint8Array = await (
+    selectedNodes[0] as ExportMixin
+  ).exportAsync();
+
+  emit<SelectionChangedHandler>("SELECTION_CHANGED", {
+    nodeBlob: nodeBlob,
+  });
+};
+
+const handleStartPlugin = async (): Promise<void> => {
+  const selectedNodes: SceneNode[] = getSelectedNodesOrAllNodes();
+
+  const pluginData = selectedNodes[0].getPluginData("viewerState");
+  const viewerState = pluginData ? JSON.parse(pluginData) : undefined;
+  let nodeBlob: Uint8Array | undefined = selectedNodes.length
+    ? await (selectedNodes[0] as ExportMixin).exportAsync()
+    : undefined;
+
+  emit<StartPluginHandler>("START_PLUGIN", {
+    nodeBlob: nodeBlob,
+    viewerState: viewerState,
+  });
 };
 
 export default async function () {
-  figma.on("run", emitSelectionchange);
-  figma.on("selectionchange", emitSelectionchange);
-
+  figma.on("run", handleStartPlugin);
+  figma.on("selectionchange", handleSelectionChanged);
 
   on<ExportImageHandler>("EXPORT_IMAGE", (exportImage: ExportImage) => {
     const node: RectangleNode = createImageNode(exportImage.image, {
@@ -40,6 +53,8 @@ export default async function () {
       xOffset: 0,
       yOffset: 0,
     });
+
+    node.setPluginData("viewerState", JSON.stringify(exportImage.viewerState));
 
     figma.currentPage.appendChild(node);
     figma.currentPage.selection = [node];

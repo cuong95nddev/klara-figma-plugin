@@ -8,10 +8,18 @@ import { ModelSelection } from ".";
 import Camera, { CameraState } from "../../components/Camera";
 import { CameraRef } from "../../components/Camera/Camera";
 import { MaterialItemState } from "../../components/MaterialItem";
-import ModelRender, { ModelState } from "../../components/ModelRender";
-import defaultModel from "../../components/ModelRender/DefaultModel";
+import ModelRender, {
+  findModelById,
+  getDefaultModel,
+  ModelState,
+} from "../../components/ModelRender";
 import { ModelRenderRef } from "../../components/ModelRender/ModelRender";
-import { SelectionChangedHandler } from "../../events";
+import {
+  SelectionChanged,
+  SelectionChangedHandler,
+  StartPlugin,
+  StartPluginHandler,
+} from "../../events";
 import { ExportImageHandler } from "../../events/ExportImageHandler";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
@@ -34,6 +42,7 @@ import {
   updateModelPosition,
   updateModelRotation,
   updateModelSelection,
+  updateModelViewerState,
   updateSelectedFrame,
 } from "./ModelViewerSlide";
 import ModelViewerState from "./ModelViewerState";
@@ -59,43 +68,62 @@ const ModelViewer = () => {
     (state) => state.modelViewerState.modelSelection
   );
 
-  const [path, setPath] = useState<string>("");
-
-  useEffect(() => {
-    dispatch(
-      updateModelSelection({
-        isDefault: true,
-        id: defaultModel[0].id,
-      })
-    );
-  }, []);
+  const [path, setPath] = useState<string>();
 
   useEffect(() => {
     if (!modelSelection) {
       return;
     }
 
-    if (modelSelection.isDefault) {
-      const modelPath: string | undefined = defaultModel.find(
-        (m) => m.id === modelSelection.id
-      )?.path;
-
-      if (!modelPath) {
+    if (modelSelection.isDefault && modelSelection.id) {
+      const model = findModelById(modelSelection.id);
+      if (!model) {
         return;
       }
-      setPath(modelPath);
+
+      setPath(model.path);
     }
   }, [modelSelection]);
 
   useEffect(() => {
+    on<StartPluginHandler>("START_PLUGIN", async (startPlugin: StartPlugin) => {
+      if (!startPlugin) {
+        return;
+      }
+
+      if (startPlugin.viewerState) {
+        const viewerState = startPlugin.viewerState;
+        dispatch(updateModelViewerState({ ...viewerState }));
+        return;
+      }
+
+      // update select frame
+      if (startPlugin.nodeBlob) {
+        await handleSelectedNode(startPlugin.nodeBlob);
+      }
+
+      // load default model
+      const defaultModel = getDefaultModel();
+      dispatch(
+        updateModelSelection({
+          isDefault: true,
+          id: defaultModel.id,
+        })
+      );
+    });
+
     on<SelectionChangedHandler>(
       "SELECTION_CHANGED",
-      async (node: Uint8Array) => {
-        const result: string = (await readAsDataURL(node)) as string;
-        dispatch(updateSelectedFrame(result));
+      async (selectionChanged: SelectionChanged) => {
+        await handleSelectedNode(selectionChanged.nodeBlob);
       }
     );
   }, []);
+
+  const handleSelectedNode = async (nodeBlob: Uint8Array): Promise<void> => {
+    const result: string = (await readAsDataURL(nodeBlob)) as string;
+    dispatch(updateSelectedFrame(result));
+  };
 
   const materialSettingState: MaterialSettingState = useAppSelector(
     (state) => state.materialSettingState
@@ -139,7 +167,7 @@ const ModelViewer = () => {
   };
 
   const handleModelLoaded = (): void => {
-    resetCamera();
+    //resetCamera();
 
     let modelPosition = modelRenderRef.current?.getPosition();
     if (modelPosition) {
@@ -192,26 +220,30 @@ const ModelViewer = () => {
   }, [exportImageState]);
 
   return (
-    <ModelViewerContainer>
-      <Canvas ref={canvasRef}>
-        <Suspense fallback={null}>
-          <ModelRender
-            path={path}
-            modelState={{ ...modelState }}
-            materialsChanged={handleMaterialsChanged}
-            onLoaded={handleModelLoaded}
-            ref={modelRenderRef}
-          />
-          <Environment preset="city" />
-        </Suspense>
-        <Camera
-          ref={cameraRef}
-          cameraState={{ ...cameraState }}
-          onCameraChange={handleCameraChange}
-        />
-      </Canvas>
-      <Loader />
-    </ModelViewerContainer>
+    <>
+      {path && (
+        <ModelViewerContainer>
+          <Canvas ref={canvasRef}>
+            <Suspense fallback={null}>
+              <ModelRender
+                path={path}
+                modelState={{ ...modelState }}
+                materialsChanged={handleMaterialsChanged}
+                onLoaded={handleModelLoaded}
+                ref={modelRenderRef}
+              />
+              <Environment preset="city" />
+            </Suspense>
+            <Camera
+              ref={cameraRef}
+              cameraState={{ ...cameraState }}
+              onCameraChange={handleCameraChange}
+            />
+          </Canvas>
+          <Loader />
+        </ModelViewerContainer>
+      )}
+    </>
   );
 };
 

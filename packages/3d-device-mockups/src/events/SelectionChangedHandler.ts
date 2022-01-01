@@ -1,6 +1,7 @@
 import { EventHandler } from "@create-figma-plugin/utilities";
+import SelectionChanged from "./SelectionChanged";
 
 export interface SelectionChangedHandler extends EventHandler {
   name: 'SELECTION_CHANGED'
-  handler: (node: Uint8Array) => void
+  handler: (selectionChange: SelectionChanged) => void
 }

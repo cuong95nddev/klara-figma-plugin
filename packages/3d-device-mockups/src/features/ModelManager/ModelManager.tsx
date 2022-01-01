@@ -1,7 +1,7 @@
 import { Select } from "antd";
 import { FunctionComponent } from "react";
 import styled from "styled-components";
-import defaultModel from "../../components/ModelRender/DefaultModel";
+import { defaultModel } from "../../components/ModelRender";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { ModelSelection } from "../ModelViewer";
 import { updateModelSelection } from "../ModelViewer/ModelViewerSlide";
@@ -18,14 +18,6 @@ const ModelManager: FunctionComponent<ModelManagerProps> = () => {
 
   const handleProvinceChange = (value: any) => {
     const id: number = value as number;
-    const modelPath: string | undefined = defaultModel.find(
-      (m) => m.id === id
-    )?.path;
-
-    if (!modelPath) {
-      return;
-    }
-
     dispatch(
       updateModelSelection({
         isDefault: true,

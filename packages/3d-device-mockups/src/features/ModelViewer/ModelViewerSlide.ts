@@ -31,6 +31,12 @@ export const slice = createSlice({
   name: "modelViewerState",
   initialState,
   reducers: {
+    updateModelViewerState: (
+      state,
+      action: PayloadAction<ModelViewerState>
+    ) => {
+      return action.payload;
+    },
     updateModelSelection: (state, action: PayloadAction<ModelSelection>) => {
       state.modelSelection = action.payload;
     },
@@ -50,6 +56,7 @@ export const slice = createSlice({
 });
 
 export const {
+  updateModelViewerState,
   updateModelSelection,
   updateCameraState,
   updateSelectedFrame,

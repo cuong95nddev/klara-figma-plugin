@@ -88,11 +88,11 @@ async function buildMainBundleAsync(options: {
             fullySpecified: false,
           },
           use: {
-            loader: 'babel-loader',
+            loader: "babel-loader",
             options: {
-              presets: ['@babel/preset-env']
-            }
-          }
+              presets: ["@babel/preset-env"],
+            },
+          },
         },
       ],
     },
@@ -210,7 +210,7 @@ async function buildUiBundleAsync(options: {
           exclude: /\.module\.(sa|sc|c)ss$/i,
           use: [
             {
-              loader: prod ? MiniCssExtractPlugin.loader : "style-loader",
+              loader: "style-loader",
             },
             {
               loader: "css-loader",
@@ -231,7 +231,7 @@ async function buildUiBundleAsync(options: {
           test: /\.module\.(sa|sc|c)ss$/i,
           use: [
             {
-              loader: prod ? MiniCssExtractPlugin.loader : "style-loader",
+              loader: "style-loader",
             },
             {
               loader: "css-loader",

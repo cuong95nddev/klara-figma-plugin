@@ -1,31 +1,31 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { CameraSettingState } from ".";
 import type { RootState } from "../../stores";
-import { ResetCameraAction } from "./ResetCameraAction";
+import { ResetCameraTrigger } from "./ResetCameraTrigger";
 
 const initialState: CameraSettingState = {
-  resetCameraAction: ResetCameraAction.FINISHED,
+  resetCameraTrigger: ResetCameraTrigger.FINISHED,
 };
 
 export const slice = createSlice({
-  name: "cameraSettingActionState",
+  name: "cameraSettingState",
   initialState,
   reducers: {
-    startResetCameraAction: (
-      state
-    ) => {
-      state.resetCameraAction = ResetCameraAction.START;
+    triggerResetCamera: (state) => {
+      state.resetCameraTrigger = ResetCameraTrigger.START;
     },
 
-    finishResetCameraAction: (
-      state
-    ) => {
-      state.resetCameraAction = ResetCameraAction.FINISHED;
+    resettingCamera: (state) => {
+      state.resetCameraTrigger = ResetCameraTrigger.RESETTING;
+    },
+
+    finishResetCamera: (state) => {
+      state.resetCameraTrigger = ResetCameraTrigger.FINISHED;
     },
   },
 });
 
-export const { startResetCameraAction, finishResetCameraAction } =
+export const { triggerResetCamera, resettingCamera, finishResetCamera } =
   slice.actions;
 
 export const selectViewer = (state: RootState) => state.cameraSettingState;

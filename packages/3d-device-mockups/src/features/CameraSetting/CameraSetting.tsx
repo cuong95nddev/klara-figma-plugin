@@ -14,7 +14,7 @@ import {
   updateCameraState,
   updateModelRotation,
 } from "../ModelViewer/ModelViewerSlide";
-import { startResetCameraAction } from "./CameraSettingSlide";
+import { triggerResetCamera } from "./CameraSettingSlide";
 
 interface CameraSettingProps {}
 
@@ -60,7 +60,7 @@ const CameraSetting: FunctionComponent<CameraSettingProps> = () => {
   }, [modelRotationX.value, modelRotationY.value, modelRotationZ.value]);
 
   const handleResetCamera = (): void => {
-    dispatch(startResetCameraAction());
+    dispatch(triggerResetCamera());
   };
 
   return (

@@ -1,5 +1,5 @@
-import { ResetCameraAction } from "./ResetCameraAction";
+import { ResetCameraTrigger } from "./ResetCameraTrigger";
 
 export default interface CameraSettingState {
-    resetCameraAction: ResetCameraAction
+    resetCameraTrigger: ResetCameraTrigger
 }

@@ -30,8 +30,12 @@ import {
 import { ActionState } from "../Action";
 import { updateExportImageState } from "../Action/ActionSlide";
 import { ExportImageState } from "../Action/ExportImageState";
-import { finishResetCameraAction } from "../CameraSetting/CameraSettingSlide";
-import { ResetCameraAction } from "../CameraSetting/ResetCameraAction";
+import {
+  finishResetCamera,
+  resettingCamera,
+  triggerResetCamera,
+} from "../CameraSetting/CameraSettingSlide";
+import { ResetCameraTrigger } from "../CameraSetting/ResetCameraTrigger";
 import { MaterialSettingState } from "../MaterialSetting";
 import {
   loadTextureForMaterialDone,
@@ -60,8 +64,8 @@ const ModelViewer = () => {
   const modelState: ModelState = modelViewerState.modelState;
   const cameraState: CameraState = modelViewerState.cameraState;
   const selectedFrame: string = modelViewerState.selectedFrame || "";
-  const resetCameraActionState: ResetCameraAction = useAppSelector(
-    (state) => state.cameraSettingState.resetCameraAction
+  const resetCameraTrigger: ResetCameraTrigger = useAppSelector(
+    (state) => state.cameraSettingState.resetCameraTrigger
   );
 
   const modelSelection: ModelSelection = useAppSelector(
@@ -84,6 +88,9 @@ const ModelViewer = () => {
       setPath(model.path);
     }
   }, [modelSelection]);
+
+  const [isModelFromPluginDataLoaded, setIsModelFromPluginDataLoaded] =
+    useState<boolean>(false);
 
   useEffect(() => {
     on<StartPluginHandler>("START_PLUGIN", async (startPlugin: StartPlugin) => {
@@ -110,6 +117,8 @@ const ModelViewer = () => {
           id: defaultModel.id,
         })
       );
+
+      setIsModelFromPluginDataLoaded(true);
     });
 
     on<SelectionChangedHandler>(
@@ -155,19 +164,24 @@ const ModelViewer = () => {
   const cameraRef = useRef<CameraRef>(null);
 
   useEffect(() => {
-    if (resetCameraActionState != ResetCameraAction.START) {
+    if (resetCameraTrigger != ResetCameraTrigger.START) {
       return;
     }
+    dispatch(resettingCamera());
     resetCamera();
-    dispatch(finishResetCameraAction());
-  }, [resetCameraActionState]);
+    dispatch(finishResetCamera());
+  }, [resetCameraTrigger]);
 
   const resetCamera = (): void => {
     cameraRef.current?.reset(modelRenderRef.current?.getScene());
   };
 
   const handleModelLoaded = (): void => {
-    //resetCamera();
+    if (isModelFromPluginDataLoaded) {
+      dispatch(triggerResetCamera());
+    } else {
+      setIsModelFromPluginDataLoaded(true);
+    }
 
     let modelPosition = modelRenderRef.current?.getPosition();
     if (modelPosition) {

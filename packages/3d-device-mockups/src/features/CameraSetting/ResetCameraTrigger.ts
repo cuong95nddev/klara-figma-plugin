@@ -1,4 +1,4 @@
-export enum ResetCameraAction {
+export enum ResetCameraTrigger {
   START,
   RESETTING,
   FINISHED,

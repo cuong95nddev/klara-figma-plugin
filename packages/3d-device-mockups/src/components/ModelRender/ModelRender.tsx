@@ -138,7 +138,6 @@ const ModelRenderInner = (
 
   useImperativeHandle(ref, () => ({
     setMaterialTexture(materialName: string, url: string) {
-      console.log(materialName);
       setSelectedMaterialName(materialName);
       setTextureUrl(url);
     },

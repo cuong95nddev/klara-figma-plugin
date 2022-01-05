@@ -19,8 +19,8 @@ import {
   Vector2,
   Vector3,
 } from "three";
-import { CustomOrbitControls } from "./CameraControl";
 import CameraState from "./CameraState";
+import { CustomCamera } from "./CustomCamera";
 import useCameraKeyboard from "./useCameraKeyboard";
 
 export declare interface CameraRef {
@@ -182,7 +182,7 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
 
   return (
     <Fragment>
-      <CustomOrbitControls ref={cameraControlRef} />
+      <CustomCamera ref={cameraControlRef} />
     </Fragment>
   );
 };

@@ -23,7 +23,7 @@ declare global {
   }
 }
 
-export const CustomOrbitControls: React.FC<any> = React.forwardRef(
+export const CustomCamera: React.FC<any> = React.forwardRef(
   (props, ref: any) => {
     const { camera, gl } = useThree();
     useFrame((state, delta) => {

@@ -35,6 +35,7 @@ export declare interface ModelRenderRef {
   getRenderer: () => WebGLRenderer;
   getPosition: () => Vector3;
   getRotation: () => Vector3;
+  clear: () => void;
 }
 export declare interface ModelRenderProps {
   path: string;
@@ -48,16 +49,13 @@ const ModelRenderInner = (
   ref: Ref<ModelRenderRef>
 ) => {
   const rotation: Vector3 = modelState.rotation;
-  const { scene, nodes, materials } = useGLTF(path, true) as any;
+  const { scene, nodes, materials } = useGLTF(path) as any;
   const lights = useRef<Light[]>([]);
   const [updateScene, setUpdateScene] = useState<number>(0);
-  const sceneCloned = useMemo(() => {
-    return scene.clone();
-  }, [scene, updateScene]);
 
   useEffect(() => {
     console.log("model rotation updated");
-    sceneCloned.rotation.set(rotation.x, rotation.y, rotation.z);
+    scene.rotation.set(rotation.x, rotation.y, rotation.z);
   }, [rotation]);
 
   useEffect(() => {
@@ -167,6 +165,15 @@ const ModelRenderInner = (
         z: scene.rotation.z,
       };
     },
+    clear(){
+      if(!path){
+        return;
+      }
+
+      console.log("model cleared");
+
+      useGLTF.clear(path);
+    }
   }));
 
   useEffect(() => {
@@ -189,10 +196,12 @@ const ModelRenderInner = (
         } as MaterialItemState)
     );
 
+    console.log(materialItems)
+
     materialsChanged?.(materialItems);
   };
 
-  return <primitive object={sceneCloned} />;
+  return <primitive object={scene} />;
 };
 
 const ModelRender = forwardRef(ModelRenderInner);

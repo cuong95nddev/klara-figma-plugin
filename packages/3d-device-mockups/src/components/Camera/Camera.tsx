@@ -90,7 +90,7 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
   };
 
   const debounceHandleUpdateCameraState = useCallback(
-    _.debounce(handleUpdateCameraState, 250, { maxWait: 250 }),
+    _.debounce(handleUpdateCameraState, 500, { maxWait: 500 }),
     []
   );
 

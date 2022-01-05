@@ -54,6 +54,8 @@ export const slice = createSlice({
         return;
       }
 
+      console.log(action.payload);
+
       if (state.modelSelection.materialTextures == undefined) {
         state.modelSelection.materialTextures = [];
       }

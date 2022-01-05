@@ -90,6 +90,8 @@ const ModelViewer = () => {
       return;
     }
 
+    modelRenderRef.current?.clear();
+
     if (modelSelection.isDefault && modelSelection.id) {
       const model = findModelById(modelSelection.id);
       if (!model) {
@@ -98,7 +100,7 @@ const ModelViewer = () => {
 
       setPath(model.path);
     }
-  }, [modelSelection]);
+  }, [modelSelection?.id]);
 
   const [isModelFromPluginDataLoaded, setIsModelFromPluginDataLoaded] =
     useState<boolean>(false);
@@ -111,6 +113,7 @@ const ModelViewer = () => {
 
       if (startPlugin.viewerState) {
         const viewerState = startPlugin.viewerState;
+        console.log(startPlugin);
         dispatch(updateModelSelection({ ...viewerState.modelSelection! }));
 
         if (startPlugin.selectedNodes) {

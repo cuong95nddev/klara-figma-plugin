@@ -90,7 +90,7 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
   };
 
   const debounceHandleUpdateCameraState = useCallback(
-    _.debounce(handleUpdateCameraState, 500, { maxWait: 500 }),
+    _.debounce(handleUpdateCameraState, 350),
     []
   );
 
@@ -103,13 +103,13 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
     camera.updateProjectionMatrix();
 
     cameraControlRef.current.addEventListener(
-      "update",
+      "control",
       debounceHandleUpdateCameraState
     );
 
     return () => {
       cameraControlRef.current.removeEventListener(
-        "update",
+        "control",
         debounceHandleUpdateCameraState
       );
     };
@@ -117,7 +117,6 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
 
   useImperativeHandle(ref, () => ({
     reset(box3OrObject: Object3D<Event> | Box3) {
-      //cameraControlRef.current.reset();
       paddingInCssPixel(box3OrObject, 30, 30, 30, 30);
       handleUpdateCameraState();
     },

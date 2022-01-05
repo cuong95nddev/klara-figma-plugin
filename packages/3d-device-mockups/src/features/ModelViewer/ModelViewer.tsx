@@ -113,7 +113,7 @@ const ModelViewer = () => {
 
       if (startPlugin.viewerState) {
         const viewerState = startPlugin.viewerState;
-        console.log(startPlugin);
+        
         dispatch(updateModelSelection({ ...viewerState.modelSelection! }));
 
         if (startPlugin.selectedNodes) {
@@ -163,27 +163,27 @@ const ModelViewer = () => {
     (state) => state.materialSettingState
   );
 
-  const loadTextureMaterialId = materialSettingState.loadTextureMaterialId;
+  const loadTextureMaterialName = materialSettingState.loadTextureMaterialName;
 
   useEffect(() => {
-    if (!loadTextureMaterialId || !selectedNode || !selectedNode.nodeDataUrl) {
+    if (!loadTextureMaterialName || !selectedNode || !selectedNode.nodeDataUrl) {
       return;
     }
 
     modelRenderRef.current?.setMaterialTexture(
-      loadTextureMaterialId,
+      loadTextureMaterialName,
       selectedNode.nodeDataUrl
     );
 
     dispatch(
       addMaterialTexture({
-        materialId: loadTextureMaterialId,
+        materialName: loadTextureMaterialName,
         nodeId: selectedNode?.nodeId,
       })
     );
 
     dispatch(loadTextureForMaterialDone());
-  }, [loadTextureMaterialId]);
+  }, [loadTextureMaterialName]);
 
   const handleCameraChange = useCallback((cameraState: CameraState) => {
     dispatch(updateCameraState(cameraState));
@@ -241,7 +241,7 @@ const ModelViewer = () => {
           )[0];
           if (node && node.nodeDataUrl) {
             modelRenderRef.current?.setMaterialTexture(
-              materialTexture.materialId,
+              materialTexture.materialName,
               node.nodeDataUrl
             );
           }

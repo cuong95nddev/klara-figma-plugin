@@ -1,7 +1,7 @@
 import { MaterialItemState } from "../../components/MaterialItem";
 
 export default interface MaterialSettingState {
-  loadTextureMaterialId?: number
+  loadTextureMaterialName?: string
   selectedMaterialId?: number;
   materialStates: MaterialItemState[];
 }

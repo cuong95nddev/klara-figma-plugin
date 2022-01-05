@@ -22,11 +22,11 @@ export const slice = createSlice({
       state.selectedMaterialId = action.payload;
     },
 
-    loadTextureForMaterial: (state, action: PayloadAction<number>) => {
-      state.loadTextureMaterialId = action.payload;
+    loadTextureForMaterial: (state, action: PayloadAction<string>) => {
+      state.loadTextureMaterialName = action.payload;
     },
     loadTextureForMaterialDone: (state) => {
-      state.loadTextureMaterialId = undefined;
+      state.loadTextureMaterialName = undefined;
     },
   },
 });

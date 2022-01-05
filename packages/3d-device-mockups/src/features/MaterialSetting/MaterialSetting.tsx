@@ -1,5 +1,5 @@
 import { Collapse } from "antd";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 import styled from "styled-components";
 import MaterialItem, { MaterialItemState } from "../../components/MaterialItem";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -16,14 +16,19 @@ const MaterialSetting: FunctionComponent<MaterialSettingProps> = () => {
     (state) => state.materialSettingState.materialStates
   );
 
+  const materialStatesSorted = useMemo(
+    () => _.sortBy(materialStates, ["name"]),
+    [materialStates]
+  );
+
   const handleLoadFrame = (selectedItem: MaterialItemState) => {
-    dispatch(loadTextureForMaterial(selectedItem.id));
+    dispatch(loadTextureForMaterial(selectedItem.name));
   };
 
   return (
     <MaterialSettingContainer>
       <MaterialList>
-        {materialStates.map((materialItem) => (
+        {materialStatesSorted.map((materialItem) => (
           <MaterialItem
             key={materialItem.id}
             materialItemState={materialItem}

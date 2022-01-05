@@ -30,7 +30,7 @@ import {
 import { MaterialItemState } from "../MaterialItem";
 
 export declare interface ModelRenderRef {
-  setMaterialTexture: (materialId: number, url: string) => void;
+  setMaterialTexture: (materialName: string, url: string) => void;
   getScene: () => any;
   getRenderer: () => WebGLRenderer;
   getPosition: () => Vector3;
@@ -54,7 +54,6 @@ const ModelRenderInner = (
   const [updateScene, setUpdateScene] = useState<number>(0);
 
   useEffect(() => {
-    console.log("model rotation updated");
     scene.rotation.set(rotation.x, rotation.y, rotation.z);
   }, [rotation]);
 
@@ -95,7 +94,7 @@ const ModelRenderInner = (
   const { gl } = useThree();
 
   const [textureUrl, setTextureUrl] = useState<string>();
-  const [selectedMaterialId, setSelectedMaterialId] = useState<number>();
+  const [selectedMaterialName, setSelectedMaterialName] = useState<string>();
 
   const textureLoader = useRef<TextureLoader>();
 
@@ -122,10 +121,12 @@ const ModelRenderInner = (
     material.needsUpdate = true;
   };
 
-  const getSelectedMaterial = (): any =>
-    Object.values(materials).find(
-      (material: any) => material.id === selectedMaterialId
+  const getSelectedMaterial = (): any => {
+    return Object.values(materials).find(
+      (material: any) => material.name === selectedMaterialName
     );
+  }
+    
 
   useEffect(() => {
     if (!textureUrl) {
@@ -138,11 +139,11 @@ const ModelRenderInner = (
     }
 
     applyScreenTexture(textureUrl, selectedMaterial);
-  }, [textureUrl, selectedMaterialId]);
+  }, [textureUrl, selectedMaterialName]);
 
   useImperativeHandle(ref, () => ({
-    setMaterialTexture(materialId: number, url: string) {
-      setSelectedMaterialId(materialId);
+    setMaterialTexture(materialName: string, url: string) {
+      setSelectedMaterialName(materialName);
       setTextureUrl(url);
     },
     getScene() {
@@ -169,9 +170,6 @@ const ModelRenderInner = (
       if(!path){
         return;
       }
-
-      console.log("model cleared");
-
       useGLTF.clear(path);
     }
   }));
@@ -195,9 +193,7 @@ const ModelRenderInner = (
           roughness: material.roughness,
         } as MaterialItemState)
     );
-
-    console.log(materialItems)
-
+    
     materialsChanged?.(materialItems);
   };
 

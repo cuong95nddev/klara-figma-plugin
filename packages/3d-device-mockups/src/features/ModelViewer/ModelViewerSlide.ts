@@ -54,18 +54,15 @@ export const slice = createSlice({
         return;
       }
 
-      console.log(action.payload);
-
       if (state.modelSelection.materialTextures == undefined) {
         state.modelSelection.materialTextures = [];
       }
 
       state.modelSelection.materialTextures =
         state.modelSelection.materialTextures.filter(
-          (i) => i.materialId !== action.payload.materialId
+          (i) => i.materialName !== action.payload.materialName
         );
       state.modelSelection.materialTextures.push(action.payload);
-      console.log(state.modelSelection.materialTextures)
     },
   },
 });

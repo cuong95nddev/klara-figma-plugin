@@ -1,4 +1,4 @@
 export default interface MaterialTexture {
-    materialId: number,
+    materialName: string,
     nodeId: string
 }

@@ -85,8 +85,6 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
       },
       distance: cameraControlRef.current.distance,
     });
-
-    console.log("camera updated");
   };
 
   const debounceHandleUpdateCameraState = useCallback(

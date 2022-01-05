@@ -5,7 +5,6 @@ import React, {
   Ref,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -35,7 +34,7 @@ export declare interface ModelRenderRef {
   getRenderer: () => WebGLRenderer;
   getPosition: () => Vector3;
   getRotation: () => Vector3;
-  clear: () => void;
+  clean: () => void;
 }
 export declare interface ModelRenderProps {
   path: string;
@@ -51,7 +50,6 @@ const ModelRenderInner = (
   const rotation: Vector3 = modelState.rotation;
   const { scene, nodes, materials } = useGLTF(path) as any;
   const lights = useRef<Light[]>([]);
-  const [updateScene, setUpdateScene] = useState<number>(0);
 
   useEffect(() => {
     scene.rotation.set(rotation.x, rotation.y, rotation.z);
@@ -83,8 +81,6 @@ const ModelRenderInner = (
     for (const light of lights.current) {
       scene.add(light);
     }
-
-    setUpdateScene(Date.now());
 
     if (onLoaded) {
       onLoaded();
@@ -125,11 +121,10 @@ const ModelRenderInner = (
     return Object.values(materials).find(
       (material: any) => material.name === selectedMaterialName
     );
-  }
-    
+  };
 
   useEffect(() => {
-    if (!textureUrl) {
+    if (!textureUrl || !selectedMaterialName) {
       return;
     }
 
@@ -143,6 +138,7 @@ const ModelRenderInner = (
 
   useImperativeHandle(ref, () => ({
     setMaterialTexture(materialName: string, url: string) {
+      console.log(materialName);
       setSelectedMaterialName(materialName);
       setTextureUrl(url);
     },
@@ -166,12 +162,15 @@ const ModelRenderInner = (
         z: scene.rotation.z,
       };
     },
-    clear(){
-      if(!path){
+    clean() {
+      setSelectedMaterialName(undefined);
+      setTextureUrl(undefined);
+
+      if (!path) {
         return;
       }
       useGLTF.clear(path);
-    }
+    },
   }));
 
   useEffect(() => {
@@ -193,7 +192,7 @@ const ModelRenderInner = (
           roughness: material.roughness,
         } as MaterialItemState)
     );
-    
+
     materialsChanged?.(materialItems);
   };
 

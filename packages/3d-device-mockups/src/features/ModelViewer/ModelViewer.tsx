@@ -90,7 +90,7 @@ const ModelViewer = () => {
       return;
     }
 
-    modelRenderRef.current?.clear();
+    modelRenderRef.current?.clean();
 
     if (modelSelection.isDefault && modelSelection.id) {
       const model = findModelById(modelSelection.id);

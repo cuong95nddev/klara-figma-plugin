@@ -38,7 +38,10 @@ export const slice = createSlice({
       return action.payload;
     },
     updateModelSelection: (state, action: PayloadAction<ModelSelection>) => {
-      state.modelSelection = action.payload;
+      return {
+        ...initialState,
+        modelSelection: action.payload,
+      };
     },
     updateCameraState: (state, action: PayloadAction<CameraState>) => {
       state.cameraState = action.payload;
@@ -73,7 +76,7 @@ export const {
   updateCameraState,
   updateModelPosition,
   updateModelRotation,
-  addMaterialTexture
+  addMaterialTexture,
 } = slice.actions;
 
 export const selectViewer = (state: RootState) => state.modelViewerState;

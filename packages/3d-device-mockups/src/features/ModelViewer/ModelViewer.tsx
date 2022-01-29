@@ -43,6 +43,8 @@ import {
   triggerResetCamera,
 } from "../CameraSetting/CameraSettingSlide";
 import { ResetCameraTrigger } from "../CameraSetting/ResetCameraTrigger";
+import { EnvironmentState } from "../EnvironmentSetting";
+import { EnvironmentPreset } from "../EnvironmentSetting/EnvironmentPreset";
 import { MaterialSettingState } from "../MaterialSetting";
 import {
   loadTextureForMaterialDone,
@@ -50,6 +52,8 @@ import {
 } from "../MaterialSetting/MaterialSettingSlide";
 import {
   addMaterialTexture,
+  setEnvironmentPreset,
+  setLightIntensity,
   updateCameraState,
   updateModelPosition,
   updateModelRotation,
@@ -230,6 +234,14 @@ const ModelViewer = () => {
               ...viewerStateFromPlugin.modelState.rotation,
             })
           );
+          dispatch(
+            setEnvironmentPreset(viewerStateFromPlugin.environmentState.preset!)
+          );
+          dispatch(
+            setLightIntensity(
+              viewerStateFromPlugin.environmentState.lightIntensity!
+            )
+          );
         }, 0);
       }
 
@@ -319,6 +331,10 @@ const ModelViewer = () => {
     setRootState(rootState);
   };
 
+  const environmentState: EnvironmentState = useAppSelector(
+    (state) => state.modelViewerState.environmentState
+  );
+
   return (
     <>
       {path && (
@@ -334,7 +350,7 @@ const ModelViewer = () => {
             }}
             onCreated={onCanvasCreated}
           >
-            <ambientLight intensity={0.3} />
+            <ambientLight intensity={environmentState.lightIntensity} />
             <directionalLight intensity={1.1} position={[0.5, 0, 0.866]} />
             <directionalLight intensity={0.8} position={[-6, 2, 2]} />
             <Suspense fallback={null}>
@@ -345,7 +361,9 @@ const ModelViewer = () => {
                 onLoaded={handleModelLoaded}
                 ref={modelRenderRef}
               />
-              <Environment preset="city" />
+              <Environment
+                preset={environmentState.preset as EnvironmentPreset}
+              />
             </Suspense>
             <Camera
               ref={cameraRef}

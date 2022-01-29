@@ -25,6 +25,10 @@ const initialState: ModelViewerState = {
     },
     distance: 0,
   },
+  environmentState: {
+    preset: "city",
+    lightIntensity: 0.3,
+  },
 };
 
 export const slice = createSlice({
@@ -67,6 +71,12 @@ export const slice = createSlice({
         );
       state.modelSelection.materialTextures.push(action.payload);
     },
+    setEnvironmentPreset: (state, action: PayloadAction<string>) => {
+      state.environmentState.preset = action.payload;
+    },
+    setLightIntensity: (state, action: PayloadAction<number>) => {
+      state.environmentState.lightIntensity = action.payload;
+    },
   },
 });
 
@@ -77,6 +87,8 @@ export const {
   updateModelPosition,
   updateModelRotation,
   addMaterialTexture,
+  setEnvironmentPreset,
+  setLightIntensity
 } = slice.actions;
 
 export const selectViewer = (state: RootState) => state.modelViewerState;

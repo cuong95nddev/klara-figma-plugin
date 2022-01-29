@@ -1,6 +1,6 @@
 import { emit, on } from "@create-figma-plugin/utilities";
 import { Environment, Loader } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, RootState } from "@react-three/fiber";
 import React, {
   Suspense,
   useCallback,
@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import styled from "styled-components";
-import { Object3D, WebGLRenderer } from "three";
+import { NoToneMapping, Scene, WebGLRenderer } from "three";
 import { ModelSelection } from ".";
 import Camera, { CameraState } from "../../components/Camera";
 import { CameraRef } from "../../components/Camera/Camera";
@@ -113,7 +113,7 @@ const ModelViewer = () => {
 
       if (startPlugin.viewerState) {
         const viewerState = startPlugin.viewerState;
-        
+
         dispatch(updateModelSelection({ ...viewerState.modelSelection! }));
 
         if (startPlugin.selectedNodes) {
@@ -166,7 +166,11 @@ const ModelViewer = () => {
   const loadTextureMaterialName = materialSettingState.loadTextureMaterialName;
 
   useEffect(() => {
-    if (!loadTextureMaterialName || !selectedNode || !selectedNode.nodeDataUrl) {
+    if (
+      !loadTextureMaterialName ||
+      !selectedNode ||
+      !selectedNode.nodeDataUrl
+    ) {
       return;
     }
 
@@ -263,17 +267,23 @@ const ModelViewer = () => {
   };
 
   const exportImage = async (): Promise<any> => {
-    if (!modelRenderRef.current) {
+    if (!modelRenderRef.current || !rootState) {
       return;
     }
 
-    const renderer: WebGLRenderer = modelRenderRef.current?.getRenderer();
-    const scene: Object3D<Event> = modelRenderRef.current?.getScene();
-    const camera: THREE.Camera = cameraRef.current?.getCamera();
+    const renderer: WebGLRenderer = rootState.gl;
+    const scene: Scene = rootState.scene;
+    const camera: THREE.Camera = rootState.camera;
+
+    const pixelRatio = renderer.getPixelRatio();
+
     renderer.setPixelRatio(2);
     renderer.render(scene, camera);
 
     const image: string = renderer.domElement.toDataURL("image/png", 1);
+
+    renderer.setPixelRatio(pixelRatio);
+
     let imageElement: HTMLImageElement = await getImage(image);
     const blob = getImageBlob(image);
 
@@ -301,11 +311,32 @@ const ModelViewer = () => {
     dispatch(updateExportImageState(ExportImageState.FINISHED));
   }, [exportImageState]);
 
+  const [rootState, setRootState] = useState<RootState>();
+
+  const onCanvasCreated = (rootState: RootState) => {
+    rootState.gl.physicallyCorrectLights = true;
+    rootState.gl.toneMapping = NoToneMapping;
+    setRootState(rootState);
+  };
+
   return (
     <>
       {path && (
         <ModelViewerContainer>
-          <Canvas ref={canvasRef}>
+          <Canvas
+            ref={canvasRef}
+            flat
+            frameloop="always"
+            dpr={[1, 2]}
+            gl={{
+              antialias: true,
+              powerPreference: "high-performance",
+            }}
+            onCreated={onCanvasCreated}
+          >
+            <ambientLight intensity={0.3} />
+            <directionalLight intensity={1.1} position={[0.5, 0, 0.866]} />
+            <directionalLight intensity={0.8} position={[-6, 2, 2]} />
             <Suspense fallback={null}>
               <ModelRender
                 path={path}

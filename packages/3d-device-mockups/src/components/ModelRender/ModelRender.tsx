@@ -9,10 +9,7 @@ import React, {
   useState,
 } from "react";
 import {
-  AmbientLight,
   Color,
-  Light,
-  LinearFilter,
   sRGBEncoding,
   Texture,
   TextureLoader,
@@ -24,7 +21,6 @@ import {
   cleanMaterial,
   cleanRenderer,
   cleanScene,
-  removeLights,
 } from "../../utilities/threeUtils";
 import { MaterialItemState } from "../MaterialItem";
 
@@ -48,8 +44,7 @@ const ModelRenderInner = (
   ref: Ref<ModelRenderRef>
 ) => {
   const rotation: Vector3 = modelState.rotation;
-  const { scene, nodes, materials } = useGLTF(path) as any;
-  const lights = useRef<Light[]>([]);
+  const { scene, materials } = useGLTF(path) as any;
 
   useEffect(() => {
     scene.rotation.set(rotation.x, rotation.y, rotation.z);
@@ -58,7 +53,6 @@ const ModelRenderInner = (
   useEffect(() => {
     return () => {
       cleanMaterial(materials);
-      removeLights(lights.current);
       cleanScene(scene);
       cleanRenderer(gl);
     };
@@ -67,19 +61,6 @@ const ModelRenderInner = (
   useEffect(() => {
     if (!scene) {
       return;
-    }
-
-    lights.current = [];
-
-    const ambientLight = new AmbientLight(0xffffff, 2);
-    lights.current.push(ambientLight);
-
-    // const directionalLight = new DirectionalLight(0xffffff, 1.5);
-    // directionalLight.position.set(-6, 2, 2);
-    // lights.current.push(directionalLight);
-
-    for (const light of lights.current) {
-      scene.add(light);
     }
 
     if (onLoaded) {
@@ -101,15 +82,10 @@ const ModelRenderInner = (
 
   const applyScreenTexture = async (textureUrl: string, material: any) => {
     let texture: Texture = await loadTexture(textureUrl);
-
     texture.encoding = sRGBEncoding;
-    texture.minFilter = LinearFilter;
-    texture.magFilter = LinearFilter;
     texture.flipY = false;
     texture.anisotropy = gl.capabilities.getMaxAnisotropy();
-    texture.generateMipmaps = false;
-
-    await gl.initTexture(texture);
+    gl.initTexture(texture);
 
     material.color = new Color(0xffffff);
     material.transparent = false;

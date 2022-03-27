@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { actionReducer } from "../features/Action";
+import { exportReducer } from "../features/Export";
 import { cameraSettingReducer } from "../features/CameraSetting";
 import { materialSettingReducer } from "../features/MaterialSetting";
 import { modelViewerReducer } from "../features/ModelViewer";
@@ -7,7 +7,7 @@ import { modelViewerReducer } from "../features/ModelViewer";
 const rootReducer = combineReducers({
   modelViewerState: modelViewerReducer,
   materialSettingState: materialSettingReducer,
-  actionState: actionReducer,
+  exportState: exportReducer,
   cameraSettingState: cameraSettingReducer
 });
 

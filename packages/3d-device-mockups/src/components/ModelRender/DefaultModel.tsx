@@ -1,24 +1,13 @@
-import iphone11 from "../../assets/glb/iphone-11.glb";
-import iphone12 from "../../assets/glb/iphone-12.glb";
-import macbookPro from "../../assets/glb/macbook-pro.glb";
+
+import iphone13 from "../../assets/glb/iphone13.glb";
 import Model from "./Model";
 
 const defaultModel: Model[] = [
   {
     id: 1,
-    name: "Iphone 12",
-    path: iphone12,
-  },
-  {
-    id: 2,
-    name: "Iphone 11",
-    path: iphone11,
-  },
-  {
-    id: 3,
-    name: "Macbook Pro",
-    path: macbookPro,
-  },
+    name: "Iphone 13",
+    path: iphone13
+  }
 ];
 
 export const findModelById = (id: number): Model | undefined =>

@@ -25,7 +25,13 @@ const handleSelectionChanged = async (): Promise<void> => {
   }
 
   const node = nodes[0];
-  const nodeBlob = await (node as ExportMixin).exportAsync();
+  const nodeBlob = await (node as ExportMixin).exportAsync({
+    format: "JPG",
+    constraint: {
+      type: "SCALE",
+      value: 1
+    }
+  });
   emit<SelectionChangedHandler>("SELECTION_CHANGED", {
     selectedNode: {
       nodeBlob: nodeBlob,

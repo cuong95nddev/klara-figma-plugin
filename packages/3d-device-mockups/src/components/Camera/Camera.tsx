@@ -1,4 +1,4 @@
-import { useThree } from "@react-three/fiber";
+import {useThree} from "@react-three/fiber";
 import CameraControls from "camera-controls";
 import _ from "lodash";
 import React, {
@@ -20,7 +20,7 @@ import {
   Vector3,
 } from "three";
 import CameraState from "./CameraState";
-import { CustomCamera } from "./CustomCamera";
+import {CustomCamera} from "./CustomCamera";
 import useCameraKeyboard from "./useCameraKeyboard";
 
 export declare interface CameraRef {
@@ -179,7 +179,7 @@ const CameraInner: ForwardRefRenderFunction<CameraRef, CameraProps> = (
 
   return (
     <Fragment>
-      <CustomCamera ref={cameraControlRef} />
+      <CustomCamera ref={cameraControlRef}/>
     </Fragment>
   );
 };

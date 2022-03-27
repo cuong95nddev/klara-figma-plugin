@@ -1,8 +1,7 @@
-import { Col, Row } from "antd";
+import {Col, Row} from "antd";
 import React from "react";
-import { Provider } from "react-redux";
+import {Provider} from "react-redux";
 import styled from "styled-components";
-import Action from "../../features/Action";
 import ModelViewer from "../../features/ModelViewer";
 import ViewerSetting from "../../features/ViewerSetting";
 import stores from "../../stores";
@@ -18,9 +17,6 @@ const Viewer = () => {
           <SettingSection>
             <ViewerSetting />
           </SettingSection>
-          <ActionSection>
-            <Action />
-          </ActionSection>
         </LeftContainer>
       </ViewerContainer>
     </Provider>
@@ -42,7 +38,5 @@ const SettingSection = styled.div`
   flex: 1;
   overflow: auto;
 `;
-
-const ActionSection = styled.div``;
 
 export default Viewer;

@@ -249,7 +249,7 @@ async function buildUiBundleAsync(options: {
           ],
         },
         {
-          test: /\.(png|jpg|gif|webp|svg|glb)$/,
+          test: /\.(png|jpg|gif|webp|svg|glb|gltf)$/,
           loader: "url-loader",
         },
         {

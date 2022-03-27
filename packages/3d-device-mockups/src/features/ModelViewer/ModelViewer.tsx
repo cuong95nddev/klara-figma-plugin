@@ -34,9 +34,9 @@ import {
   getImageBlob,
   readAsDataURL,
 } from "../../utilities/imageUtils";
-import { ActionState } from "../Action";
-import { updateExportImageState } from "../Action/ActionSlide";
-import { ExportImageState } from "../Action/ExportImageState";
+import { ExportState } from "../Export";
+import { updateExportImageState } from "../Export/ExportSlide";
+import { ExportImageState } from "../Export/ExportImageState";
 import {
   finishResetCamera,
   resettingCamera,
@@ -278,6 +278,8 @@ const ModelViewer = () => {
     }
   };
 
+  const exportScale: number = useAppSelector((state) => state.exportState.scale);
+
   const exportImage = async (): Promise<any> => {
     if (!modelRenderRef.current || !rootState) {
       return;
@@ -289,7 +291,7 @@ const ModelViewer = () => {
 
     const pixelRatio = renderer.getPixelRatio();
 
-    renderer.setPixelRatio(2);
+    renderer.setPixelRatio(exportScale);
     renderer.render(scene, camera);
 
     const image: string = renderer.domElement.toDataURL("image/png", 1);
@@ -311,7 +313,7 @@ const ModelViewer = () => {
     });
   };
 
-  const actionState: ActionState = useAppSelector((state) => state.actionState);
+  const actionState: ExportState = useAppSelector((state) => state.exportState);
 
   const exportImageState = actionState.exportImage;
 
@@ -381,7 +383,7 @@ const ModelViewer = () => {
 const ModelViewerContainer = styled.div`
   height: 100%;
   width: 100%;
-  background: #303030
+  background: #c9c9c9
     url('data:image/svg+xml,\
     <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill-opacity=".15">\
       <rect x="200" width="200" height="200" />\

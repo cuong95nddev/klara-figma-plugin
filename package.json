@@ -5,7 +5,8 @@
     "lerna": "^4.0.0"
   },
   "scripts": {
-    "watch": "lerna exec --scope @klara-figma-plugin/3d-device-mockups -- yarn watch"
+    "watch": "lerna exec --scope @klara-figma-plugin/3d-device-mockups -- yarn watch",
+    "build": "lerna exec --scope @klara-figma-plugin/3d-device-mockups -- yarn build"
   },
   "workspaces": {
     "packages": [

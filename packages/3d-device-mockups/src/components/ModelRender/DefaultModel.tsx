@@ -1,5 +1,5 @@
 
-import iphone13 from "../../assets/glb/iphone13.glb";
+import iphone13 from "../../assets/glb/iphone13-POC.glb";
 import Model from "./Model";
 
 const defaultModel: Model[] = [
